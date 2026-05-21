@@ -81,7 +81,7 @@ function App() {
             transition={{ delay: 0.1 }}
             className="text-5xl sm:text-6xl md:text-7xl font-heading font-bold text-slate-100 mb-6 leading-tight tracking-tight"
           >
-            Professional Supervised <br /> <span className="text-amber">Corporate AI Agents.</span>
+            Enterprise AI Agents <br /> <span className="text-amber"> supervised by professionals</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -89,10 +89,7 @@ function App() {
             transition={{ delay: 0.2 }}
             className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto"
           >
-            Alfred is the shared services platform for Canadian entrepreneurs. 
-            <strong className="text-slate-200 block mt-2 font-mono text-sm border border-steel bg-carbon/50 inline-block px-4 py-2 rounded">
-              System Status: Active &lt;// AI automation with professional verification /&gt;
-            </strong> 
+            Alfred Corp is a agentic fractional corprate services platform. Founders, Entrepreneurs and Small Businesses use our platform to eliminates the heavy cost and overhead of traditional hiring. By partnering with us, you unlock professional expertise while maintaining lean, highly scalable operations.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

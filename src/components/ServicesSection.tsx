@@ -117,10 +117,10 @@ export function ServicesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-4">
-            Everything your business needs
+            Current Agents
           </h2>
           <p className="text-lg text-slate-400">
-            A complete suite of back-office services powered by AI speed and grounded by Canadian professional oversight.
+            A powerful suite of agents offering corprate services grounded by professional oversight.
           </p>
         </div>
 

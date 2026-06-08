@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "MarketingOptIn": {
+      "title": "Marketing Opt-In",
+      "description": "User who opted into marketing materials.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "optedInAt": { "type": "timestamp" },
+        "businessName": { "type": "string" },
+        "industry": { "type": "string" },
+        "description": { "type": "string" },
+        "employees": { "type": "string" },
+        "revenue": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email", "name", "optedInAt"]
+    }
+  },
+  "firestore": {
+    "/marketing_opt_ins/{userId}": {
+      "schema": { "$ref": "#/entities/MarketingOptIn" },
+      "description": "Stores users who opted into marketing."
+    }
+  }
+}

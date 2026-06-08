@@ -3,73 +3,104 @@ import { WaitlistModal } from './components/WaitlistModal';
 import { ContactModal } from './components/ContactModal';
 import { ServicesSection } from './components/ServicesSection';
 import { PricingSection } from './components/PricingSection';
-import { ShieldCheck, Zap, History, ChevronRight, LockKeyhole, FileCheck2, ArrowRight, Twitter, Linkedin, Instagram } from 'lucide-react';
-import { motion, useScroll, useMotionValueEvent } from 'motion/react';
+import { HowItWorksMockup } from './components/HowItWorksMockup';
+import { FAQSection } from './components/FAQSection';
+import { ShieldCheck, Zap, History, ChevronRight, LockKeyhole, FileCheck2, ArrowRight, Twitter, Linkedin, Instagram, Menu, X } from 'lucide-react';
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [showFloatingBtn, setShowFloatingBtn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 600) {
-      setShowFloatingBtn(true);
-    } else {
-      setShowFloatingBtn(false);
-    }
-  });
-
   const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setIsMobileMenuOpen(false);
+    
+    // Slight delay ensures the DOM menu update doesn't interrupt smooth scrolling
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        const headerOffset = 80; // approximate header height to prevent covering content
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 50);
   };
 
   return (
     <div className="min-h-screen bg-obsidian font-sans text-slate-300 selection:bg-amber/30 selection:text-white">
       {/* Navigation */}
-      <nav className="fixed w-full z-40 bg-obsidian/90 backdrop-blur-md border-b border-steel transition-all">
+      <nav className="fixed w-full z-40 bg-obsidian/95 backdrop-blur-md border-b border-steel transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
             <div className="flex items-center gap-2">
               {/* Generated logo element */}
-              <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-carbon border border-steel">
-                <img src="/logo.png" alt="Alfred Corporate Services Logo" className="w-full h-full object-cover opacity-80" />
+              <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded bg-white">
+                <img src="/logo.png" alt="Alfred Corporate Services Logo" className="w-full h-full object-contain" />
               </div>
               <span className="font-heading font-bold text-xl tracking-tight text-slate-100">Alfred <span className="text-slate-500 font-normal">Corp</span></span>
             </div>
             <div className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-widest text-slate-400">
-              <button onClick={() => scrollToSection('how-it-works')} className="hover:text-amber transition-colors">How it works</button>
-              <button onClick={() => scrollToSection('services')} className="hover:text-amber transition-colors">Services</button>
-              <button onClick={() => scrollToSection('pricing')} className="hover:text-amber transition-colors">Pricing</button>
-              <button onClick={() => scrollToSection('trust')} className="hover:text-amber transition-colors">Traceability</button>
+              <button onClick={() => scrollToSection('services')} className="hover:text-amber transition-colors cursor-pointer">Services</button>
+              <button onClick={() => scrollToSection('how-it-works')} className="hover:text-amber transition-colors cursor-pointer">How it works</button>
+              <button onClick={() => scrollToSection('pricing')} className="hover:text-amber transition-colors cursor-pointer">Pricing</button>
+              <button onClick={() => scrollToSection('about-us')} className="hover:text-amber transition-colors cursor-pointer">About Us</button>
+              <button onClick={() => scrollToSection('faq')} className="hover:text-amber transition-colors cursor-pointer">FAQ</button>
+              <button onClick={() => setIsContactModalOpen(true)} className="hover:text-amber transition-colors cursor-pointer">Contact us</button>
             </div>
-            <button 
-              onClick={() => setIsContactModalOpen(true)}
-              className="btn-primary px-5 py-2 rounded font-mono text-xs uppercase tracking-widest transition-all"
-            >
-              Contact us
-            </button>
+
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-slate-200 hover:text-amber p-2 transition-colors"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
 
-      {/* Floating CTA */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: showFloatingBtn ? 1 : 0, y: showFloatingBtn ? 0 : 50 }}
-        className="fixed bottom-6 right-6 z-40 pointer-events-none"
-      >
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="pointer-events-auto shadow-glow btn-primary bg-obsidian px-6 py-3 rounded text-amber font-mono text-xs uppercase tracking-widest flex items-center gap-2 transition-all hover:shadow-glow-lg active:scale-95"
-        >
-          Request Invite
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </motion.div>
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden overflow-hidden bg-obsidian/95"
+            >
+              <div className="px-6 py-6 flex flex-col gap-6 font-mono text-xs uppercase tracking-widest text-slate-400 border-t border-steel">
+                <button onClick={() => scrollToSection('services')} className="w-full text-left hover:text-amber transition-colors">Services</button>
+                <button onClick={() => scrollToSection('how-it-works')} className="w-full text-left hover:text-amber transition-colors">How it works</button>
+                <button onClick={() => scrollToSection('pricing')} className="w-full text-left hover:text-amber transition-colors">Pricing</button>
+                <button onClick={() => scrollToSection('about-us')} className="w-full text-left hover:text-amber transition-colors">About Us</button>
+                <button onClick={() => scrollToSection('faq')} className="w-full text-left hover:text-amber transition-colors">FAQ</button>
+                <button 
+                  onClick={() => { setIsContactModalOpen(true); setIsMobileMenuOpen(false); }}
+                  className="w-full text-left hover:text-amber transition-colors text-amber"
+                >
+                  Contact us
+                </button>
+                <button 
+                  onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }}
+                  className="w-full text-left hover:text-amber transition-colors flex items-center gap-2"
+                >
+                  Request Invite
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
 
       {/* Hero Section */}
       <main className="relative pt-32 pb-20 sm:pt-44 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
@@ -79,22 +110,14 @@ function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-heading font-bold text-slate-100 mb-6 leading-tight tracking-tight"
+            className="text-5xl sm:text-6xl md:text-7xl font-heading font-bold text-slate-100 mb-12 leading-tight tracking-tight"
           >
             Enterprise AI Agents <br /> <span className="text-amber"> supervised by professionals</span>
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto"
-          >
-            Alfred Corp is a agentic fractional corprate services platform. Founders, Entrepreneurs and Small Businesses use our platform to eliminates the heavy cost and overhead of traditional hiring. By partnering with us, you unlock professional expertise while maintaining lean, highly scalable operations.
-          </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <button 
@@ -118,32 +141,32 @@ function App() {
       <section className="py-20 bg-carbon border-y border-steel bg-pinstripe relative">
         <div className="absolute inset-0 bg-gradient-to-b from-obsidian via-transparent to-obsidian opacity-50 z-0"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-            <div>
-              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto md:mx-0 mb-6 shadow-glow">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <Zap className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">AI-Powered Speed</h3>
               <p className="text-slate-400 leading-relaxed text-sm">
-                Routine tasks—from document parsing to code scaffolding—are handled in seconds by our specialized, secure LLM agent network.
+                Task agents with one time or routine business tasks. 
               </p>
             </div>
-            <div>
-              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto md:mx-0 mb-6 shadow-glow">
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <ShieldCheck className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Human-In-The-Loop</h3>
               <p className="text-slate-400 leading-relaxed text-sm">
-                We never ship AI output blind. Every task is reviewed, corrected, and verified by a domain-specific professional.
+                Professionals review, correct, and verify tasks.
               </p>
             </div>
-            <div>
-              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto md:mx-0 mb-6 shadow-glow">
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <History className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Traceable by Design</h3>
               <p className="text-slate-400 leading-relaxed text-sm">
-                Total transparency. See the exact audit trail for every task, mapping what the AI did and who signed off on the final result.
+                Every task is logged, documenting what the AI did and the final sign-off on the verified result.
               </p>
             </div>
           </div>
@@ -156,73 +179,18 @@ function App() {
       {/* How It Works */}
       <section id="how-it-works" className="py-24 bg-obsidian bg-grid-pattern relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row gap-16 items-center">
-            <div className="lg:w-1/2">
-              <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-8">
-                Delegation without the anxiety.
-              </h2>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded border border-amber/50 bg-amber/10 flex items-center justify-center font-mono text-amber text-sm font-bold shadow-glow">01</div>
-                  <div>
-                    <h4 className="text-sm font-heading font-bold text-slate-200 mb-1 tracking-wide uppercase">Request an invite</h4>
-                    <p className="text-sm text-slate-400">Join our structured waitlist. We onboard in cohorts to ensure high-quality service for all Canadian clients.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded border border-steel bg-carbon flex items-center justify-center font-mono text-slate-400 text-sm">02</div>
-                  <div>
-                    <h4 className="text-sm font-heading font-bold text-slate-200 mb-1 tracking-wide uppercase">Submit your tasks</h4>
-                    <p className="text-sm text-slate-400">Dump your chaos into our dashboard via chat or ticket. The AI instantly starts triaging and drafting.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded border border-steel bg-carbon flex items-center justify-center font-mono text-slate-400 text-sm">03</div>
-                  <div>
-                    <h4 className="text-sm font-heading font-bold text-slate-200 mb-1 tracking-wide uppercase">Supervision in background</h4>
-                    <p className="text-sm text-slate-400">Our human professionals step in. They review the AI's drafts, fix edge cases, and add strategic context.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded border border-steel bg-carbon flex items-center justify-center font-mono text-slate-400 text-sm">04</div>
-                  <div>
-                    <h4 className="text-sm font-heading font-bold text-slate-200 mb-1 tracking-wide uppercase">Trace & approve</h4>
-                    <p className="text-sm text-slate-400">You receive a polished deliverable alongside a strict audit log of who touched it. You approve with confidence.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-4">
+              Preview
+            </h2>
+          </div>
+          <div className="flex flex-col lg:flex-row gap-16 items-center justify-center">
             
             <div className="lg:w-1/2 w-full">
-              <div className="bg-carbon border border-steel rounded p-6 sm:p-8 relative shadow-soft-dark flex items-center justify-center">
-                <div className="absolute top-0 right-0 p-4 opacity-5">
-                  <LockKeyhole className="w-48 h-48 text-slate-500" />
-                </div>
-                
-                {/* Audit Log representation (theme matched) */}
-                <div className="bg-obsidian border border-steel rounded p-5 text-slate-300 w-full relative z-10 shadow-2xl font-mono">
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-700 pb-1">Traceability.Log</span>
-                    <span className="text-[10px] text-amber flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber animate-pulse"></span> SYSTEM: ONLINE</span>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="audit-line">
-                      <div className="audit-dot"></div>
-                      <div className="text-[11px] text-amber mb-0.5">10:02_AM [USER] <span className="text-slate-200 bg-carbon px-1">NEW_TASK</span></div>
-                      <div className="text-[10px] text-slate-500">Subject: Independent Contractor Agreement</div>
-                    </div>
-                    <div className="audit-line">
-                      <div className="audit-dot border-amber bg-amber/20 shadow-glow"></div>
-                      <div className="text-[11px] text-slate-300 mb-0.5">10:04_AM [AGENT] <span className="text-emerald-400 bg-carbon px-1 border border-steel">DRAFTED</span></div>
-                      <div className="text-[10px] text-slate-500">&gt; Executing: /templates/ontario_contract.md<br/>&gt; Flag: Termination clause requires review.</div>
-                    </div>
-                    <div className="audit-line">
-                      <div className="audit-dot"></div>
-                      <div className="text-[11px] text-slate-300 mb-0.5">10:45_AM [HUMAN] <span className="text-blue-400 bg-carbon px-1 border border-steel">VERIFIED</span></div>
-                      <div className="text-[10px] text-slate-500">&gt; Expert: HR_Specialist_Jane_D<br/>&gt; Note: Amended termination clause to align with 2026 ESA precedent.</div>
-                    </div>
-                  </div>
+              <div className="relative flex items-center justify-center p-4">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-amber/5 rounded-full blur-3xl opacity-50 z-0 pointer-events-none"></div>
+                <div className="relative z-10 w-full max-w-sm">
+                  <HowItWorksMockup />
                 </div>
               </div>
             </div>
@@ -233,40 +201,42 @@ function App() {
       {/* Pricing Section */}
       <PricingSection onRequestInvite={() => setIsModalOpen(true)} onContactUs={() => setIsContactModalOpen(true)} />
 
-      {/* Trust & Traceability */}
-      <section id="trust" className="py-24 bg-carbon border-y border-steel bg-grid-pattern overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-obsidian via-transparent to-obsidian opacity-80 z-0"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <ShieldCheck className="h-12 w-12 text-slate-500 mx-auto mb-6" />
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight mb-4 text-slate-100">
-              Enterprise-grade accountability
-            </h2>
-            <p className="text-lg text-slate-400">
-              When it's your business on the line, "black box" AI isn't enough.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            <div className="bg-obsidian border border-steel rounded p-8 shadow-soft-dark">
-              <FileCheck2 className="w-8 h-8 text-amber mb-6" />
-              <h3 className="text-xl font-heading font-bold mb-3 text-slate-200">The Audit Log</h3>
-              <p className="text-sm font-mono text-slate-400 leading-relaxed">
-                Before you approve any work, you see exactly what the AI generated, what the human changed, and why. 
-                Complete transparency built directly into your delivery timeline.
-              </p>
-            </div>
-            <div className="bg-obsidian border border-steel rounded p-8 shadow-soft-dark">
-              <ShieldCheck className="w-8 h-8 text-amber mb-6" />
-              <h3 className="text-xl font-heading font-bold mb-3 text-slate-200">Canadian Data Residency</h3>
-              <p className="text-sm font-mono text-slate-400 leading-relaxed">
-                We understand PIPEDA. Operational documents and sensitive payroll/HR artifacts remain secure, 
-                and professional oversight ensures compliance with local Canadian business law.
-              </p>
-            </div>
+
+      {/* About Us */}
+      <section id="about-us" className="py-20 sm:py-24 bg-obsidian relative border-b border-steel">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="text-sm font-mono text-amber tracking-widest uppercase mb-6 border border-amber/30 bg-amber/10 inline-block px-4 py-1.5 rounded">
+            About Us
           </div>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-10">
+            Frictionless Business Operations
+          </h2>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-sans text-base sm:text-lg text-slate-400 leading-relaxed space-y-6"
+          >
+            <p>
+              <span className="text-amber font-medium font-sans">Alfred Corp</span> is an agentic fractional corporate services platform. 
+            </p>
+            <p>
+              <span className="text-amber font-medium font-sans">Founders, Entrepreneurs</span> and <span className="text-amber font-medium font-sans">Small Businesses</span> use our platform to obtain business support services that operate at AI speed with the <span className="text-amber font-medium font-sans">reliability</span> of <span className="text-amber font-medium font-sans">trusted</span> professionals.
+            </p>
+            <p>
+              Professionals partner with us to reduce friction for their customers and take advantage of AI agents without the overhead of setting up and maintaining IT infrastructure or the sharp learning curve of rapidly changing AI technology. 
+            </p>
+            <p>
+              <span className="text-amber font-medium font-sans">Alfred Corp</span> delivers highly scalable support services and expertise that make running a business and providing professional services frictionless and fast. 
+            </p>
+          </motion.div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Footer */}
       <footer className="bg-obsidian border-t border-steel py-12">
@@ -292,9 +262,9 @@ function App() {
           </div>
           
           <div className="text-slate-500 font-mono text-[10px] uppercase tracking-widest flex gap-6">
-            <a href="#" className="hover:text-slate-300 transition-colors">Contact Support</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Terms of Service</a>
+            <button onClick={() => setIsContactModalOpen(true)} className="hover:text-slate-300 transition-colors cursor-pointer bg-transparent border-0 p-0 font-mono text-[10px] uppercase tracking-widest">Contact Support</button>
+            <a href="/privacy.html" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
+            <a href="/terms.html" className="hover:text-slate-300 transition-colors">Terms of Service</a>
           </div>
           
           <div className="text-slate-600 font-mono text-[10px] uppercase tracking-widest">

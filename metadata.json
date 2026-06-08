@@ -1,6 +1,8 @@
 {
-  "name": "Alfred",
+  "name": "Alfred Corp",
   "description": "Shared Services Platform for Canadian Entrepreneurs",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

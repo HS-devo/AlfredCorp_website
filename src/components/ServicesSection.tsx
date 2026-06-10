@@ -176,6 +176,12 @@ export function ServicesSection() {
             );
           })}
         </div>
+
+        <div className="mt-16 text-center">
+          <p className="text-sm font-mono text-slate-400 uppercase tracking-widest text-shadow-glow">
+            We are continuously developing new capabilities and specialized agents to meet your evolving business needs.
+          </p>
+        </div>
       </div>
     </section>
   );

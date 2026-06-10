@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send } from 'lucide-react';
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultReason?: string;
 }
 
-export function ContactModal({ isOpen, onClose }: ContactModalProps) {
+export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalProps) {
   const [submitted, setSubmitted] = useState(false);
   const [contactReason, setContactReason] = useState("");
+  const [profService, setProfService] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setSubmitted(false);
+      if (defaultReason) {
+        setContactReason(defaultReason);
+      } else {
+        setContactReason("");
+      }
+      setProfService("");
+    }
+  }, [isOpen, defaultReason]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +85,18 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Email <span className="text-red-500">*</span></label>
                         <input required type="email" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Role <span className="text-red-500">*</span></label>
+                      <select required className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none">
+                        <option value="">Select a role...</option>
+                        <option value="professional">Professional Services Provider</option>
+                        <option value="owner">Founder / Owner</option>
+                        <option value="developer">Developer / Engineer</option>
+                        <option value="manager">Manager / Director</option>
+                        <option value="other">Other</option>
+                      </select>
                     </div>
 
                     <div>
@@ -149,19 +175,50 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden pt-4"
+                          className="overflow-hidden space-y-4 pt-4"
                         >
-                          <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">LinkedIn / Portfolio URL <span className="text-red-500">*</span></label>
-                          <input required type="url" placeholder="https://" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                          <div>
+                            <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Type of Professional Service <span className="text-red-500">*</span></label>
+                            <select 
+                              required 
+                              value={profService}
+                              onChange={(e) => setProfService(e.target.value)}
+                              className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none"
+                            >
+                              <option value="">Select service type...</option>
+                              <option value="cpa">CPA / Accounting</option>
+                              <option value="legal">Legal / Paralegal</option>
+                              <option value="hr">HR Professional</option>
+                              <option value="dev">Software Engineering</option>
+                              <option value="other">Other</option>
+                            </select>
+                          </div>
+                          
+                          {profService === 'other' && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                            >
+                              <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Specify Service <span className="text-red-500">*</span></label>
+                              <input required type="text" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                            </motion.div>
+                          )}
+
+                          <div>
+                            <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">LinkedIn / Portfolio URL <span className="text-slate-400 font-normal normal-case">(Optional)</span></label>
+                            <input type="url" placeholder="https://" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
                     {contactReason !== 'custom_dev' && (
-                      <div>
-                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Message <span className="text-red-500">*</span></label>
+                      <div className="mt-4">
+                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">
+                          Message {contactReason === 'work' ? <span className="text-slate-400 font-normal normal-case">(Optional)</span> : <span className="text-red-500">*</span>}
+                        </label>
                         <textarea 
-                          required
+                          required={contactReason !== 'work'}
                           rows={4} 
                           className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none resize-none"
                         ></textarea>
@@ -174,9 +231,6 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     >
                       Submit
                     </button>
-                    <p className="text-xs font-mono text-center text-slate-500 mt-4 tracking-widest">
-                      Your information is kept secure.
-                    </p>
                   </form>
                 </>
               )}

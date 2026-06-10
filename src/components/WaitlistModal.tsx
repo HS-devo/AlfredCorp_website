@@ -14,7 +14,8 @@ const servicesList = [
   'Health and Safety',
   'Human Resources',
   'Admin Support',
-  'Accounting'
+  'Accounting',
+  'Other'
 ];
 
 export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
@@ -78,8 +79,7 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                 </div>
               ) : (
                 <>
-                  <h2 className="text-2xl font-heading font-bold text-slate-100 mb-2">Request Access</h2>
-                  <p className="text-slate-400 mb-6 font-mono text-xs">Join the queue. We onboard new businesses weekly.</p>
+                  <h2 className="text-2xl font-heading font-bold text-slate-100 mb-6">Request Access</h2>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -125,6 +125,24 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                           </label>
                         ))}
                       </div>
+                      <AnimatePresence>
+                        {selectedServices.includes('Other') && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden mt-3"
+                          >
+                            <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Specify Other Service <span className="text-red-500">*</span></label>
+                            <input 
+                              required 
+                              type="text" 
+                              placeholder="Please specify..."
+                              className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     {selectedServices.length > 0 && (
@@ -146,10 +164,12 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
                     <div>
                       <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Source <span className="text-red-500">*</span></label>
-                      <select required className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none">
+                      <select required className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none">
                         <option value="">Select...</option>
-                        <option value="referral">Network</option>
-                        <option value="social">Signal Intercept</option>
+                        <option value="search">Search Engine</option>
+                        <option value="social">Social Media</option>
+                        <option value="referral">Word of Mouth / Referral</option>
+                        <option value="advertisement">Advertisement</option>
                         <option value="other">Other</option>
                       </select>
                     </div>
@@ -160,9 +180,6 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                     >
                       Submit
                     </button>
-                    <p className="text-xs font-mono text-center text-slate-500 mt-4 tracking-widest">
-                      Your information is kept secure.
-                    </p>
                   </form>
                 </>
               )}

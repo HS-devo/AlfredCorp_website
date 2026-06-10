@@ -5,14 +5,20 @@ import { ServicesSection } from './components/ServicesSection';
 import { PricingSection } from './components/PricingSection';
 import { HowItWorksMockup } from './components/HowItWorksMockup';
 import { FAQSection } from './components/FAQSection';
-import { ShieldCheck, Zap, History, ChevronRight, LockKeyhole, FileCheck2, ArrowRight, Twitter, Linkedin, Instagram, Menu, X } from 'lucide-react';
+import { ShieldCheck, Zap, History, ChevronRight, LockKeyhole, FileCheck2, ArrowRight, Linkedin, Instagram, Menu, X } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactReason, setContactReason] = useState<string | undefined>();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+
+  const openContactModal = (reason?: string) => {
+    setContactReason(reason);
+    setIsContactModalOpen(true);
+  };
 
   const scrollToSection = (id: string) => {
     setIsMobileMenuOpen(false);
@@ -52,7 +58,7 @@ function App() {
               <button onClick={() => scrollToSection('pricing')} className="hover:text-amber transition-colors cursor-pointer">Pricing</button>
               <button onClick={() => scrollToSection('about-us')} className="hover:text-amber transition-colors cursor-pointer">About Us</button>
               <button onClick={() => scrollToSection('faq')} className="hover:text-amber transition-colors cursor-pointer">FAQ</button>
-              <button onClick={() => setIsContactModalOpen(true)} className="hover:text-amber transition-colors cursor-pointer">Contact us</button>
+              <button onClick={() => openContactModal()} className="hover:text-amber transition-colors cursor-pointer">Contact us</button>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -84,7 +90,7 @@ function App() {
                 <button onClick={() => scrollToSection('about-us')} className="w-full text-left hover:text-amber transition-colors">About Us</button>
                 <button onClick={() => scrollToSection('faq')} className="w-full text-left hover:text-amber transition-colors">FAQ</button>
                 <button 
-                  onClick={() => { setIsContactModalOpen(true); setIsMobileMenuOpen(false); }}
+                  onClick={() => { openContactModal(); setIsMobileMenuOpen(false); }}
                   className="w-full text-left hover:text-amber transition-colors text-amber"
                 >
                   Contact us
@@ -118,21 +124,41 @@ function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col md:flex-row items-stretch justify-center gap-4 max-w-3xl mx-auto w-full"
           >
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto btn-primary px-8 py-4 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-            >
-              Request Invite
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            <button 
-              onClick={() => scrollToSection('how-it-works')}
-              className="w-full sm:w-auto btn-ghost px-8 py-4 rounded font-mono text-xs uppercase tracking-widest transition-all"
-            >
-              See How It Works
-            </button>
+            {/* Business CTA */}
+            <div className="flex-1 bg-obsidian border border-steel p-5 text-left flex flex-col justify-between hover:border-amber/50 transition-colors rounded">
+              <div>
+                <h3 className="text-lg font-heading font-bold text-slate-100 mb-2">I am a Small business, Founder or Entrepreneur</h3>
+                <p className="text-slate-400 text-sm mb-5">
+                  I want to use AI agents to reduce cost, gain efficiency and improve business outcomes.
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="w-full btn-primary px-5 py-2.5 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 mt-auto"
+              >
+                Request Invite
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Professional CTA */}
+            <div className="flex-1 bg-carbon border border-steel p-5 text-left flex flex-col justify-between hover:border-slate-500 transition-colors rounded shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+              <div>
+                <h3 className="text-lg font-heading font-bold text-slate-100 mb-2">I am a Professional Services Provider</h3>
+                <p className="text-slate-400 text-sm mb-5">
+                  I want to use AI agents to improve the efficiency of my workflows, off load repetitive tasks, deliver high value expertise and positive business outcomes.
+                </p>
+              </div>
+              <button 
+                onClick={() => openContactModal('work')}
+                className="w-full bg-slate-800 text-slate-200 hover:bg-slate-700 px-5 py-2.5 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-600 mt-auto"
+              >
+                Join platform
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </motion.div>
         </div>
       </main>
@@ -147,7 +173,7 @@ function App() {
                 <Zap className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">AI-Powered Speed</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">
+              <p className="text-slate-300 leading-relaxed text-sm">
                 Task agents with one time or routine business tasks. 
               </p>
             </div>
@@ -156,7 +182,7 @@ function App() {
                 <ShieldCheck className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Human-In-The-Loop</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">
+              <p className="text-slate-300 leading-relaxed text-sm">
                 Professionals review, correct, and verify tasks.
               </p>
             </div>
@@ -165,8 +191,8 @@ function App() {
                 <History className="h-6 w-6 text-amber" />
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Traceable by Design</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">
-                Every task is logged, documenting what the AI did and the final sign-off on the verified result.
+              <p className="text-slate-300 leading-relaxed text-sm">
+                Every task is logged, documenting what the AI did and the what output has been verified by a professional.
               </p>
             </div>
           </div>
@@ -199,7 +225,7 @@ function App() {
       </section>
 
       {/* Pricing Section */}
-      <PricingSection onRequestInvite={() => setIsModalOpen(true)} onContactUs={() => setIsContactModalOpen(true)} />
+      <PricingSection onRequestInvite={() => setIsModalOpen(true)} onContactUs={() => openContactModal()} />
 
 
 
@@ -226,7 +252,7 @@ function App() {
               <span className="text-amber font-medium font-sans">Founders, Entrepreneurs</span> and <span className="text-amber font-medium font-sans">Small Businesses</span> use our platform to obtain business support services that operate at AI speed with the <span className="text-amber font-medium font-sans">reliability</span> of <span className="text-amber font-medium font-sans">trusted</span> professionals.
             </p>
             <p>
-              Professionals partner with us to reduce friction for their customers and take advantage of AI agents without the overhead of setting up and maintaining IT infrastructure or the sharp learning curve of rapidly changing AI technology. 
+             <span className="text-amber font-medium font-sans">Professionals</span> partner with us to reduce friction for their customers and take advantage of AI agents without the overhead of setting up and maintaining IT infrastructure or the sharp learning curve of rapidly changing AI technology. 
             </p>
             <p>
               <span className="text-amber font-medium font-sans">Alfred Corp</span> delivers highly scalable support services and expertise that make running a business and providing professional services frictionless and fast. 
@@ -236,7 +262,7 @@ function App() {
       </section>
 
       {/* FAQ Section */}
-      <FAQSection />
+      <FAQSection onContactClick={() => openContactModal()} />
 
       {/* Footer */}
       <footer className="bg-obsidian border-t border-steel py-12">
@@ -249,9 +275,6 @@ function App() {
               <span className="font-heading font-bold text-lg text-slate-200 tracking-wider uppercase text-xs">Alfred Corp.</span>
             </div>
             <div className="flex items-center gap-4 text-slate-500">
-              <a href="#" className="hover:text-amber transition-colors" aria-label="Twitter">
-                <Twitter className="w-5 h-5" />
-              </a>
               <a href="#" className="hover:text-amber transition-colors" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
@@ -262,20 +285,19 @@ function App() {
           </div>
           
           <div className="text-slate-500 font-mono text-[10px] uppercase tracking-widest flex gap-6">
-            <button onClick={() => setIsContactModalOpen(true)} className="hover:text-slate-300 transition-colors cursor-pointer bg-transparent border-0 p-0 font-mono text-[10px] uppercase tracking-widest">Contact Support</button>
             <a href="/privacy.html" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
             <a href="/terms.html" className="hover:text-slate-300 transition-colors">Terms of Service</a>
           </div>
           
           <div className="text-slate-600 font-mono text-[10px] uppercase tracking-widest">
-            © {new Date().getFullYear()} Alfred Corp. // Built for Canada
+            © {new Date().getFullYear()} Alfred Corp.
           </div>
         </div>
       </footer>
 
       {/* Modals */}
       <WaitlistModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} defaultReason={contactReason} />
     </div>
   );
 }

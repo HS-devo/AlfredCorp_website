@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Minus, HelpCircle } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 
 interface FAQItemProps {
   key?: React.Key;
   question: string;
-  answer: string;
+  answer: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
   index: number;
@@ -51,47 +51,81 @@ function FAQItem({ question, answer, isOpen, onToggle, index }: FAQItemProps) {
   );
 }
 
-export function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+interface FAQSectionProps {
+  onContactClick?: () => void;
+}
 
-  const keyQuestions = [
+export function FAQSection({ onContactClick }: FAQSectionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [audience, setAudience] = useState<'business' | 'professional'>('business');
+
+  const businessQuestions = [
     {
       question: "Why should I use Alfred Corp instead of setting up my own AI tools?",
-      answer: "AI and agents are an amazing technology that is meant to make lives easier. But setup, deployment, supervision, maintenance, and fixing errors creates friction and adds more work for Founders, Entrepreneurs and Small business. After all, even Batman relies on Alfred to maintain the Batcave, tune the Batmobile, and run the estate so he can focus on saving Gotham. That is exactly why we take care of the operational heavy lifting, setup, and human-in-the-loop validation—giving you a seamless, worry-free chief of staff agent network without the tech overhead."
+      answer: "AI and agents are an amazing tool that is meant to make business easier. But setup, deployment, supervision, maintenance, errors and changing technology creates friction and adds more work for Founders, Entrepreneurs and Small business. That is exactly why we take care of the setup, operational heavy lifting, and human-in-the-loop validation. Giving you a seamless access to the latest AI capabilities without the technical overhead. Every Batman needs an Alfred!"
     },
     {
       question: "Which artificial intelligence models does your platform use?",
-      answer: "We work with various base models including Claude, Gemini, and ChatGPT. This multi-model core allows us to dynamically leverage the unique strengths and reasoning capabilities of each model depending on the exact complexity and demands of your business tasks."
+      answer: "We work with various base models including Claude, Gemini, and ChatGPT. This multi-model approach allows us to leverage the unique strengths and reasoning capabilities of each model depending on the exact complexity and demands of your business tasks."
     },
     {
-      question: "Do I need technical knowledge or complex prompting skills to use Alfred Corp?",
-      answer: "No, our goal is to allow you to focus on what matters most, your business. We provide a straightforward, natural language interface so you don't need to learn prompting techniques, changing technology requirements, or complex setups. Simply talk and describe the task as you would to a human assistant."
+      question: "Do I need technical knowledge or complex prompting skills to work with Alfred Corp?",
+      answer: "No, our goal is to allow you to focus on what matters most, your business. We provide a straightforward interface so you don't need to learn complex setups, specific prompts for different providers or keep up with changing technology requirements."
     },
     {
       question: "Who are the human professionals reviewing my AI agent output?",
-      answer: "The professionals that conduct reviews are experts in their field and, if the specific tasks requires it, hold the required professional designation. For example, a certified CPA conducts financial document audits and ledger reviews, ensuring full accuracy before anything is signed off."
+      answer: "The professionals that conduct reviews are experts in their field and, if the specific tasks requires it, hold the required professional designation. For example, a certified CPA would conducts reviews of financial documents."
     },
     {
       question: "What if my business requires custom deployments or specialized systems?",
       answer: "For custom deployments we work with you to develop a solution that fits your needs. Our dedicated expert integration engineers can design custom workflows, connect proprietary data silos, and tailor human-supervised agent steps to fit your exact business operations."
     },
     {
-      question: "How do you handle heavy token usage and optimize fractional AI usage?",
-      answer: "We manage, distribute, and optimize all token generation and model computing costs dynamically. By leveraging fractional AI usage models, our platform pools resources over multiple processing networks, ensuring that you only pay for actual completed business tasks rather than fixed massive server costs or expensive premium subscriptions."
+      question: "How do you handle heavy token tasks and optimize fractional usage?",
+      answer: "We manage, distribute, and optimize tasks by leveraging fractional usage. All foundational model providers set usage limits, even on their highest tiers. We distribute when tasks are completed, maximizing usage of rolling limits and use the right model for the task. This ensures our users get the best output at the lowest cost."
     },
     {
       question: "What is the primary advantage of utilizing fractional professionals?",
-      answer: "With fractional professionals, you secure seasoned executive-level expertise—such as certified CPAs, operations leaders, and regulatory experts—precisely when your tasks demand it. This approach removes the heavy financial footprint of full-time salaries, payroll taxes, and benefits while guaranteeing that verified, elite professionals are signing off on critical business outcomes."
+      answer: "With fractional professionals, you secure seasoned executive-level expertise—such as certified CPAs, operations leaders, and regulatory experts—precisely when your tasks demand it. This approach removes the heavy financial footprint of full-time salaries, payroll taxes, and benefits while guaranteeing that professionals are available when you need them."
     },
     {
-      question: "Why rely on a dedicated AI agent development team rather than building templates in-house?",
-      answer: "Creating robust AI agent work pipelines requires rare expertise in agent nesting, API state verification, structured response parsers, and defense against model hallucination. Our dedicated AI agent development team writes, monitors, and continually patches these pipelines. This shields your enterprise from API breaking changes, version depreciations, and system integration failures."
+      question: "Why use Alfred Corp to help build Custom Workflows rather than any software developer?",
+      answer: "Creating robust AI agent workflows requires specific expertise. Our dedicated development team understands how to work with AI in a effective, efficient and safe manner. The team will ensure that guardrails, grounding techniques and other best practices are utilized to maximize workflow success and uptime for your business."
+    }
+  ];
+
+  const professionalQuestions = [
+    {
+      question: "Why should I partner with Alfred Corp as a preofessional services provider?",
+      answer: "We eliminate the friction of client onboarding, data collection, and preliminary processing. Our AI agents handle the repetitive tasks preperation, data  structuring and  drafting so you can focus on delivering professional expertise and positive business outcomes."
+    },
+    {
+      question: "Do I need to maintain any AI infrastructure or learn prompt engineering?",
+      answer: "Not at all. We handle all backend infrastructure, model updates, and workflow logic. You simply log into our platform to deliver professional expertise and positive business outcomes."
+    },
+    {
+      question: "How do you accommodate my specific professional standards and workflows?",
+      answer: "Our integration team works with you to map out your exact compliance and review procedures. We configure our AI agents to structure data according to your specific rubrics, ensuring outputs are formatted precisely the way you need to review them."
+    },
+    {
+      question: "How do I manage my availability and capacity?",
+      answer: "As an independent professional in our network, you have full control over your capacity. You can scale the volume of tasks you choose to review up or down at any time based on your current bandwidth."
+    },
+    {
+      question: "Which artificial intelligence models power the workflows?",
+      answer: "We employ a fractional approach, utilizing different models like Claude, Gemini, and ChatGPT. This ensures that the workflows are conducted by models best suited for the task."
     },
     {
       question: "I am an accredited professional. How do I join the Alfred Corp network?",
-      answer: "We are constantly expanding our vetted collective of verifying specialists. If you are a CPA, legal technician, or specialized editor interested in auditing and signing off on high-speed agentic outputs for Canadian startups, please send your credentials and background to us at network@alfredcorp.ca to begin the vetting process."
+      answer: (
+        <span>
+          We are constantly expanding our network of professionals. If you are a professional services provider, please <button type="button" onClick={(e) => { e.preventDefault(); onContactClick?.(); }} className="text-amber hover:text-amber/80 underline decoration-amber/30 underline-offset-2 bg-transparent border-none p-0 cursor-pointer text-xs sm:text-sm font-sans inline">use our contact form</button> to get in touch.
+        </span>
+      )
     }
   ];
+
+  const activeQuestions = audience === 'business' ? businessQuestions : professionalQuestions;
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -103,20 +137,34 @@ export function FAQSection() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber/30 bg-amber/10 text-xs font-mono text-amber mb-6 tracking-widest uppercase">
-            <HelpCircle className="w-3.5 h-3.5" />
-            Common Questions
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-8">
             Frequently Asked Questions
           </h2>
-          <p className="mt-4 text-slate-400 text-sm sm:text-base">
-            Everything you need to know about our supervised AI agent networks and fractional professional reviews.
-          </p>
+          
+          <div className="inline-flex flex-col sm:flex-row items-center p-1 bg-obsidian border border-steel rounded-lg w-full sm:w-auto">
+            <button 
+              onClick={() => { setAudience('business'); setOpenIndex(null); }}
+              className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all ${audience === 'business' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+            >
+              I am a small business, founder or entrepreneur
+            </button>
+            <button 
+              onClick={() => { setAudience('professional'); setOpenIndex(null); }}
+              className={`w-full sm:w-auto mt-1 sm:mt-0 sm:ml-1 px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all ${audience === 'professional' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+            >
+              I am a Professional Services Provider
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {keyQuestions.map((item, index) => (
+        <motion.div 
+          key={audience}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-4"
+        >
+          {activeQuestions.map((item, index) => (
             <FAQItem 
               key={index}
               index={index}
@@ -126,7 +174,7 @@ export function FAQSection() {
               onToggle={() => handleToggle(index)}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

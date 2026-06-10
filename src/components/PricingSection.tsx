@@ -131,7 +131,7 @@ export function PricingSection({ onRequestInvite, onContactUs }: { onRequestInvi
             Flexible Deployment Models
           </h2>
           <p className="text-lg text-slate-400">
-            Choose the model that fits your operational needs. From fully hosted and verified, to custom deployments on your own infrastructure.
+            Choose the model that fits your operational needs. From fully hosted, to custom deployments on your own infrastructure.
           </p>
         </div>
 
@@ -147,20 +147,20 @@ export function PricingSection({ onRequestInvite, onContactUs }: { onRequestInvi
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
                 <div className="inline-block px-3 py-1 bg-obsidian text-amber border border-steel rounded font-mono text-[10px] font-bold tracking-widest uppercase mb-3 text-shadow-glow">
-                  Hosted Agent
+                  Hosted Agents
                 </div>
                 <h3 className="text-2xl font-heading font-bold text-slate-100 uppercase tracking-wide">Per-Task Pricing</h3>
               </div>
             </div>
             
             <p className="text-slate-400 mb-8 border-b border-steel pb-8 text-lg">
-               We supply the stack, maintain the agent, and provide the professional verification.
+               We supply the stack, maintain the agents, and provide the professional for verification.
             </p>
             
             <div className="grid sm:grid-cols-2 gap-x-6 gap-y-4 mb-8">
               <div className="flex gap-3 items-center">
                 <CheckCircle2 className="w-4 h-4 text-amber flex-shrink-0" />
-                <span className="font-mono text-xs text-slate-300">Upfront Quotes & Approval</span>
+                <span className="font-mono text-xs text-slate-300">Upfront Task Quotes & Pre-approvals</span>
               </div>
               <div className="flex gap-3 items-center">
                 <CheckCircle2 className="w-4 h-4 text-amber flex-shrink-0" />
@@ -267,11 +267,11 @@ export function PricingSection({ onRequestInvite, onContactUs }: { onRequestInvi
             className="bg-obsidian border border-steel rounded-sm p-8 sm:p-10 flex flex-col h-full shadow-soft-dark"
           >
             <div className="inline-block self-start px-3 py-1 bg-carbon text-slate-400 border border-steel rounded font-mono text-[10px] font-bold tracking-widest uppercase mb-4">
-              Custom Agent
+              Custom Agents
             </div>
             <h3 className="text-2xl font-heading font-bold text-slate-100 uppercase tracking-wide mb-4">Custom Deployment</h3>
             <p className="text-slate-400 mb-8 leading-relaxed font-sans">
-               We build the agent to match your custom workflow. Choose between deploying on your infrastructure or ours.
+               We build the agents to match your custom workflow. Choose between deploying on your infrastructure or ours.
             </p>
             
             <div className="mb-8 mt-auto pt-8 border-t border-steel">

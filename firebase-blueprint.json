@@ -16,12 +16,63 @@
         "role": { "type": "string" }
       },
       "required": ["email", "name", "optedInAt"]
+    },
+    "WaitlistRequest": {
+      "title": "Waitlist Request",
+      "description": "Registration for the Alfred Corp waiting list.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "role": { "type": "string", "description": "Role select value" },
+        "companyName": { "type": "string", "description": "Company name" },
+        "companySize": { "type": "string", "description": "Volume of employees" },
+        "services": { "type": "array", "description": "List of services interested in" },
+        "otherService": { "type": "string", "description": "Other specified service if checked" },
+        "workflowContext": { "type": "string", "description": "Workflow description text" },
+        "source": { "type": "string", "description": "Source of referral" },
+        "submittedAt": { "type": "timestamp", "description": "Submission time" }
+      },
+      "required": ["name", "email", "phone", "role", "companyName", "companySize", "services", "source", "submittedAt"]
+    },
+    "ContactSubmission": {
+      "title": "Contact Submission",
+      "description": "Information from the general and custom dev Contact Us form.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "description": "Email address" },
+        "role": { "type": "string", "description": "User role select value" },
+        "contactReason": { "type": "string", "description": "general, custom_dev, work" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "companyName": { "type": "string", "description": "Company Name" },
+        "website": { "type": "string", "description": "Company Website URL" },
+        "expectedUsers": { "type": "number", "description": "Expected users count" },
+        "projectScope": { "type": "string", "description": "Project scope description" },
+        "projectSuccess": { "type": "string", "description": "Project success criteria" },
+        "additionalNote": { "type": "string", "description": "Optional custom dev note" },
+        "professionalService": { "type": "string", "description": "CPA, legal, HR, dev, other" },
+        "otherService": { "type": "string", "description": "Optional other professional service text" },
+        "linkedinUrl": { "type": "string", "description": "LinkedIn/Portfolio URL" },
+        "message": { "type": "string", "description": "User message text" },
+        "submittedAt": { "type": "timestamp", "description": "Submission time" }
+      },
+      "required": ["name", "email", "role", "contactReason", "submittedAt"]
     }
   },
   "firestore": {
     "/marketing_opt_ins/{userId}": {
       "schema": { "$ref": "#/entities/MarketingOptIn" },
       "description": "Stores users who opted into marketing."
+    },
+    "/waitlist_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/WaitlistRequest" },
+      "description": "Stores user access invite requests."
+    },
+    "/contact_submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/ContactSubmission" },
+      "description": "Stores professional and client contact requests."
     }
   }
 }

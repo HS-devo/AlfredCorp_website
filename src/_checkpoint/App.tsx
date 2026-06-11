@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { WaitlistModal } from './components/WaitlistModal';
-import { ContactModal } from './components/ContactModal';
-import { ServicesSection } from './components/ServicesSection';
-import { PricingSection } from './components/PricingSection';
-import { FAQSection } from './components/FAQSection';
-import { ShieldCheck, Zap, History, ChevronRight, Menu, X, ArrowRight } from 'lucide-react';
-import { motion, useScroll, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { WaitlistModal } from '../components/WaitlistModal';
+import { ContactModal } from '../components/ContactModal';
+import { ServicesSection } from '../components/ServicesSection';
+import { PricingSection } from '../components/PricingSection';
+import { FAQSection } from '../components/FAQSection';
+import { ShieldCheck, Zap, History, ChevronRight, LockKeyhole, FileCheck2, ArrowRight, Menu, X } from 'lucide-react';
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +39,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen theme-maple-chalk bg-obsidian font-sans text-slate-300 selection:bg-amber/30 selection:text-white transition-all duration-300">
+    <div className="min-h-screen bg-obsidian font-sans text-slate-300 selection:bg-amber/30 selection:text-white">
       {/* Navigation */}
       <nav className="fixed w-full z-40 bg-obsidian/95 backdrop-blur-md border-b border-steel transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,7 +141,7 @@ function App() {
             </div>
 
             {/* Professional CTA */}
-            <div className="flex-1 bg-carbon border border-steel p-5 text-left flex flex-col justify-between hover:border-amber/50 transition-colors rounded shadow-sm">
+            <div className="flex-1 bg-carbon border border-steel p-5 text-left flex flex-col justify-between hover:border-slate-500 transition-colors rounded shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
               <div>
                 <h3 className="text-lg font-heading font-bold text-slate-100 mb-2">I am a Professional Services Provider</h3>
                 <p className="text-slate-400 text-sm mb-5">
@@ -150,7 +150,7 @@ function App() {
               </div>
               <button 
                 onClick={() => openContactModal('work')}
-                className="w-full btn-ghost px-5 py-2.5 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 mt-auto cursor-pointer"
+                className="w-full bg-slate-800 text-slate-200 hover:bg-slate-700 px-5 py-2.5 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-600 mt-auto"
               >
                 Join platform
                 <ChevronRight className="h-4 w-4" />
@@ -171,7 +171,7 @@ function App() {
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">AI-Powered Speed</h3>
               <p className="text-slate-300 leading-relaxed text-sm">
-                Task agents with one-time or routine business tasks. 
+                Task agents with one time or routine business tasks. 
               </p>
             </div>
             <div className="flex flex-col items-center">
@@ -189,7 +189,7 @@ function App() {
               </div>
               <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Traceable by Design</h3>
               <p className="text-slate-300 leading-relaxed text-sm">
-                Every task is logged, documenting what the AI did and what output has been verified by a professional.
+                Every task is logged, documenting what the AI did and the what output has been verified by a professional.
               </p>
             </div>
           </div>
@@ -201,6 +201,8 @@ function App() {
 
       {/* Pricing Section */}
       <PricingSection onRequestInvite={() => setIsModalOpen(true)} onContactUs={() => openContactModal()} />
+
+
 
       {/* About Us */}
       <section id="about-us" className="py-20 sm:py-24 bg-obsidian relative border-b border-steel">

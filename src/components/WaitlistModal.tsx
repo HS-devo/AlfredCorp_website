@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
+import { handleFirestoreError, OperationType } from '../lib/firestore-error';
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -20,11 +23,55 @@ const servicesList = [
 
 export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
   const [submitted, setSubmitted] = useState(false);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Controlled form states
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companySize, setCompanySize] = useState('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [otherService, setOtherService] = useState('');
+  const [workflowContext, setWorkflowContext] = useState('');
+  const [source, setSource] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setErrorMessage(null);
+
+    const path = 'waitlist_requests';
+    try {
+      const payload = {
+        name,
+        email,
+        phone,
+        role,
+        companyName,
+        companySize,
+        services: selectedServices,
+        otherService: selectedServices.includes('Other') ? otherService : '',
+        workflowContext: selectedServices.length > 0 ? workflowContext : '',
+        source,
+        submittedAt: serverTimestamp()
+      };
+
+      await addDoc(collection(db, path), payload);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Waitlist submit error:", err);
+      setErrorMessage("Unable to submit. Please check your inputs or try again.");
+      try {
+        handleFirestoreError(err, OperationType.WRITE, path);
+      } catch (fError) {
+        // Log formatted error or propagate if running within active test context
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const toggleService = (service: string) => {
@@ -35,6 +82,23 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
     );
   };
 
+  const handleResetAndClose = () => {
+    setSubmitted(false);
+    setSubmitting(false);
+    setErrorMessage(null);
+    setName('');
+    setEmail('');
+    setPhone('');
+    setRole('');
+    setCompanyName('');
+    setCompanySize('');
+    setSelectedServices([]);
+    setOtherService('');
+    setWorkflowContext('');
+    setSource('');
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -43,8 +107,8 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm z-50"
-            onClick={onClose}
+            className="fixed inset-0 bg-obsidian/85 backdrop-blur-sm z-50"
+            onClick={handleResetAndClose}
           />
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -52,51 +116,87 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-carbon border border-steel rounded-sm shadow-glow-lg z-50 max-h-[90vh] overflow-y-auto"
           >
-            <div className="p-6 sm:p-8">
+            <div className="p-6 sm:p-8 relative">
               <button
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2 text-slate-500 hover:text-amber bg-obsidian border border-steel hover:border-amber transition-colors rounded-sm"
+                onClick={handleResetAndClose}
+                className="absolute top-4 right-4 p-2 text-slate-500 hover:text-amber bg-obsidian border border-steel hover:border-amber transition-colors rounded-sm cursor-pointer"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
               </button>
 
               {submitted ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-obsidian border border-emerald-500/50 shadow-glow rounded-sm flex items-center justify-center mx-auto mb-6">
+                <div id="waitlist-success" className="text-center py-12">
+                  <div className="w-16 h-16 bg-obsidian border border-emerald-500/50 shadow-glow rounded-sm flex items-center justify-center mx-auto mb-6 animate-bounce">
                     <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-heading font-bold text-slate-100 mb-2">Waitlist confirmed</h3>
-                  <p className="text-slate-400 font-mono text-xs tracking-widest">Invites dispatched Tuesdays.</p>
+                  <h3 className="text-2xl font-heading font-bold text-slate-100 mb-2">Access Requested</h3>
+                  <p className="text-slate-400 font-mono text-xs tracking-widest">Invites are dispatched on Tuesdays.</p>
                   <button
-                    onClick={onClose}
-                    className="mt-8 btn-ghost w-full px-6 py-3 rounded-sm font-mono text-xs uppercase tracking-widest shadow-lg transition-shadow"
+                    onClick={handleResetAndClose}
+                    className="mt-8 btn-ghost w-full px-6 py-3 rounded-sm font-mono text-xs uppercase tracking-widest shadow-lg transition-shadow cursor-pointer"
                   >
                     Close
                   </button>
                 </div>
               ) : (
                 <>
-                  <h2 className="text-2xl font-heading font-bold text-slate-100 mb-6">Request Access</h2>
+                  <h2 className="text-2xl font-heading font-bold text-slate-100 mb-6 font-sans">Request Access</h2>
+
+                  {errorMessage && (
+                    <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 text-red-400 text-xs font-mono rounded-sm">
+                      {errorMessage}
+                    </div>
+                  )}
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Full Name <span className="text-red-500">*</span></label>
-                        <input required type="text" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                        <input 
+                          required 
+                          type="text" 
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Your Name"
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
+                        />
                       </div>
                       <div>
                         <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Email <span className="text-red-500">*</span></label>
-                        <input required type="email" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                        <input 
+                          required 
+                          type="email" 
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@company.com"
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
+                        />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
+                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Phone Number <span className="text-red-500">*</span></label>
+                        <input 
+                          required 
+                          type="tel" 
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+1 (555) 000-0000" 
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
+                        />
+                      </div>
+                      <div>
                         <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Role <span className="text-red-500">*</span></label>
-                        <select required className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none">
+                        <select 
+                          required 
+                          value={role}
+                          onChange={(e) => setRole(e.target.value)}
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none"
+                        >
                           <option value="">Select a role...</option>
                           <option value="owner">Founder / Owner</option>
                           <option value="developer">Developer / Engineer</option>
@@ -104,9 +204,34 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                           <option value="other">Other</option>
                         </select>
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Company Name <span className="text-slate-400 font-normal normal-case">(Optional)</span></label>
-                        <input type="text" className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" />
+                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Company Name <span className="text-red-500">*</span></label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="Acme Corp"
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Company Size <span className="text-red-500">*</span></label>
+                        <select 
+                          required 
+                          value={companySize}
+                          onChange={(e) => setCompanySize(e.target.value)}
+                          className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none"
+                        >
+                          <option value="">Select company size...</option>
+                          <option value="1-9">1-9 employees</option>
+                          <option value="10-49">10-49 employees</option>
+                          <option value="50-249">50-249 employees</option>
+                          <option value="250+">250+ employees</option>
+                        </select>
                       </div>
                     </div>
 
@@ -137,6 +262,8 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                             <input 
                               required 
                               type="text" 
+                              value={otherService}
+                              onChange={(e) => setOtherService(e.target.value)}
                               placeholder="Please specify..."
                               className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none" 
                             />
@@ -156,7 +283,9 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                         </label>
                         <textarea 
                           rows={2} 
-                          placeholder="Describe your issue here..."
+                          value={workflowContext}
+                          onChange={(e) => setWorkflowContext(e.target.value)}
+                          placeholder="Describe your current processes or challenges..."
                           className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none resize-none"
                         ></textarea>
                       </motion.div>
@@ -164,7 +293,12 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
                     <div>
                       <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Source <span className="text-red-500">*</span></label>
-                      <select required className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none">
+                      <select 
+                        required 
+                        value={source}
+                        onChange={(e) => setSource(e.target.value)}
+                        className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none"
+                      >
                         <option value="">Select...</option>
                         <option value="search">Search Engine</option>
                         <option value="social">Social Media</option>
@@ -176,9 +310,17 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
                     <button
                       type="submit"
-                      className="btn-primary w-full py-4 rounded-sm font-mono text-xs uppercase tracking-widest mt-6"
+                      disabled={submitting}
+                      className="btn-primary w-full py-4 rounded-sm font-mono text-xs uppercase tracking-widest mt-6 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Submit
+                      {submitting ? (
+                        <>
+                          <Loader className="w-4 h-4 animate-spin text-amber" />
+                          Submitting...
+                        </>
+                      ) : (
+                        'Submit'
+                      )}
                     </button>
                   </form>
                 </>

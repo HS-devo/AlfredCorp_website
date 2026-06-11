@@ -74,7 +74,7 @@ export function FAQSection({ onContactClick }: FAQSectionProps) {
     },
     {
       question: "Who are the human professionals reviewing my AI agent output?",
-      answer: "The professionals that conduct reviews are experts in their field and, if the specific tasks requires it, hold the required professional designation. For example, a certified CPA would conducts reviews of financial documents."
+      answer: "The professionals that conduct reviews are experts in their field and, if the specific task requires it, hold the required professional designation. For example, a certified CPA would conduct reviews of financial documents."
     },
     {
       question: "What if my business requires custom deployments or specialized systems?",
@@ -90,14 +90,14 @@ export function FAQSection({ onContactClick }: FAQSectionProps) {
     },
     {
       question: "Why use Alfred Corp to help build Custom Workflows rather than any software developer?",
-      answer: "Creating robust AI agent workflows requires specific expertise. Our dedicated development team understands how to work with AI in a effective, efficient and safe manner. The team will ensure that guardrails, grounding techniques and other best practices are utilized to maximize workflow success and uptime for your business."
+      answer: "Creating robust AI agent workflows requires specific expertise. Our dedicated development team understands how to work with AI in an effective, efficient, and safe manner. The team will ensure that guardrails, grounding techniques, and other best practices are utilized to maximize workflow success and uptime for your business."
     }
   ];
 
   const professionalQuestions = [
     {
-      question: "Why should I partner with Alfred Corp as a preofessional services provider?",
-      answer: "We eliminate the friction of client onboarding, data collection, and preliminary processing. Our AI agents handle the repetitive tasks preperation, data  structuring and  drafting so you can focus on delivering professional expertise and positive business outcomes."
+      question: "Why should I partner with Alfred Corp as a professional services provider?",
+      answer: "We eliminate the friction of client onboarding, data collection, and preliminary processing. Our AI agents handle the repetitive task preparation, data structuring, and drafting so you can focus on delivering professional expertise and positive business outcomes."
     },
     {
       question: "Do I need to maintain any AI infrastructure or learn prompt engineering?",
@@ -144,13 +144,13 @@ export function FAQSection({ onContactClick }: FAQSectionProps) {
           <div className="inline-flex flex-col sm:flex-row items-center p-1 bg-obsidian border border-steel rounded-lg w-full sm:w-auto">
             <button 
               onClick={() => { setAudience('business'); setOpenIndex(null); }}
-              className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all ${audience === 'business' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+              className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer ${audience === 'business' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-200 hover:bg-carbon/50'}`}
             >
               I am a small business, founder or entrepreneur
             </button>
             <button 
               onClick={() => { setAudience('professional'); setOpenIndex(null); }}
-              className={`w-full sm:w-auto mt-1 sm:mt-0 sm:ml-1 px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all ${audience === 'professional' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+              className={`w-full sm:w-auto mt-1 sm:mt-0 sm:ml-1 px-4 sm:px-6 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer ${audience === 'professional' ? 'bg-carbon text-amber shadow-sm border border-steel/50' : 'text-slate-400 hover:text-slate-200 hover:bg-carbon/50'}`}
             >
               I am a Professional Services Provider
             </button>

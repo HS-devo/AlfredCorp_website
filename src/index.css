@@ -14,6 +14,82 @@
   --shadow-glow: 0 0 15px rgba(234, 179, 8, 0.4);
   --shadow-glow-lg: 0 0 30px rgba(234, 179, 8, 0.25);
   --shadow-soft-dark: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  
+  --text-shadow-glow: 0 0 8px rgba(234, 179, 8, 0.4);
+}
+
+/* Theme 1: Default / Obsidian Amber */
+.theme-amber-obsidian {
+  /* Inherits default variables defined in @theme */
+}
+
+/* Theme 2: Royal Laurentian (Forest Gold) */
+.theme-royal-laurentian {
+  --color-obsidian: #081510; /* Clean Forest Black */
+  --color-carbon: #0E241B; /* Cozy Spruce Pine */
+  --color-amber: #D4AF37; /* Royal Laurentian Gold */
+  --color-steel: #234234; /* Spruce Muted Border */
+  --shadow-glow: 0 0 15px rgba(212, 175, 55, 0.4);
+  --shadow-glow-lg: 0 0 30px rgba(212, 175, 55, 0.25);
+  
+  --color-slate-100: #FAF9F6; /* Warm Alabaster */
+  --color-slate-200: #E5E3D8; /* Light Linen */
+  --color-slate-300: #CCC8BD; /* Muted Warm Gray */
+  --color-slate-400: #9B9588; /* Dark Muted Slate */
+  --color-slate-500: #746F62; /* Spruce Slate Border */
+  --color-slate-600: #555146; /* Deep Muted */
+  
+  --shadow-soft-dark: 0 20px 40px -10px rgba(4, 12, 9, 0.6);
+}
+
+/* Theme 3: Maple Chalk (Warm Linen & Crimson Light Mode) */
+.theme-maple-chalk {
+  --color-obsidian: #FAF8F5; /* Warm Elegant Linen */
+  --color-carbon: #F4EFEB; /* Soft Warm Chalk */
+  --color-amber: #B12224; /* Maple Syrup Crimson */
+  --color-steel: #D3C5B5; /* Warm Taupe Border */
+  --shadow-glow: 0 0 15px rgba(177, 34, 36, 0.22);
+  --shadow-glow-lg: 0 0 30px rgba(177, 34, 36, 0.12);
+  --shadow-soft-dark: 0 20px 40px -10px rgba(120, 110, 95, 0.12);
+  
+  /* Text and details mapping for clean light mode eligibility */
+  --color-slate-100: #1B1A18; /* Rich Ink Black */
+  --color-slate-200: #2D2A26; /* Deep Charcoal */
+  --color-slate-300: #44403B; /* Graphite Gray */
+  --color-slate-400: #5E5851; /* Elegant Taupe Gray */
+  --color-slate-500: #8C8274; /* Taupe */
+  --color-slate-600: #A89D8E; /* Warm Muted Border */
+  
+  /* Services icon modifications for beautiful contrast in light theme */
+  --color-blue-400: #1D4ED8; /* Royal Blue */
+  --color-cyan-400: #0E7490; /* Forest Cyan */
+  --color-purple-400: #6D28D9; /* Imperial Purple */
+  --color-rose-400: #BE123C; /* Maple Crimson */
+  --color-emerald-400: #047857; /* Deep Emerald */
+  --color-pink-400: #BE185D; /* Royal Pink */
+  --color-orange-400: #C2410C; /* Rich Terracotta */
+  --color-amber-500: #B45309; /* Dark Bronze */
+  
+  --text-shadow-glow: none;
+}
+
+/* Theme 4: Neo Cobalt (Tech Indigo & Electric Azure) */
+.theme-neo-cobalt {
+  --color-obsidian: #03060E; /* Deep Void Blue */
+  --color-carbon: #0A1224; /* Slate Space Navy */
+  --color-amber: #3B82F6; /* High-Speed Electric Cobalt */
+  --color-steel: #1D2A4B; /* Cyber Cobalt Border */
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.45);
+  --shadow-glow-lg: 0 0 30px rgba(59, 130, 246, 0.25);
+  
+  --color-slate-100: #F8FAFC; /* Cyber Silver White */
+  --color-slate-200: #E2E8F0; /* Soft Metallic */
+  --color-slate-300: #CBD5E1; /* Slate Metal */
+  --color-slate-400: #94A3B8; /* Muted Cyber Steel */
+  --color-slate-500: #64748B; /* Dark Cyber Slate */
+  --color-slate-600: #475569; /* Void Indigo */
+  
+  --shadow-soft-dark: 0 20px 40px -10px rgba(2, 4, 10, 0.7);
 }
 
 @layer utilities {
@@ -37,14 +113,14 @@
   .btn-ghost {
     background-color: transparent;
     border: 1px solid var(--color-steel);
-    color: #E2E8F0;
+    color: var(--color-slate-200);
     transition: all 0.3s ease;
   }
   .btn-ghost:hover {
     border-color: var(--color-amber);
     color: var(--color-amber);
     box-shadow: var(--shadow-glow);
-    text-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+    text-shadow: var(--text-shadow-glow);
   }
   
   .btn-primary {
@@ -56,7 +132,7 @@
   .btn-primary:hover {
     background-color: rgba(234, 179, 8, 0.05);
     box-shadow: var(--shadow-glow);
-    text-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+    text-shadow: var(--text-shadow-glow);
   }
 
   .audit-line {

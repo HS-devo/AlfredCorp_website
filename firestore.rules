@@ -1,14 +1,35 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Zero-Trust default-deny gate
     match /{document=**} {
       allow read, write: if false;
     }
 
-    match /marketing_opt_ins/{docId} {
-      // Allow create and update (setDoc might act as an update if the user already exists)
-      allow create, update: if request.resource.data.keys().hasAll(['email', 'name', 'optedInAt']);
+    match /marketing_opt_ins/{userId} {
+      allow create, update: if request.resource.data.email is string &&
+                           request.resource.data.name is string &&
+                           request.resource.data.optedInAt is timestamp;
+    }
+
+    match /waitlist_requests/{requestId} {
+      allow create: if request.resource.data.name is string && request.resource.data.name.size() <= 150 &&
+                      request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
+                      request.resource.data.phone is string && request.resource.data.phone.size() <= 50 &&
+                      request.resource.data.role is string && request.resource.data.role.size() <= 50 &&
+                      request.resource.data.companyName is string && request.resource.data.companyName.size() <= 150 &&
+                      request.resource.data.companySize is string && request.resource.data.companySize.size() <= 50 &&
+                      request.resource.data.services is list && request.resource.data.services.size() <= 30 &&
+                      request.resource.data.source is string && request.resource.data.source.size() <= 100 &&
+                      request.resource.data.submittedAt == request.time;
+    }
+
+    match /contact_submissions/{submissionId} {
+      allow create: if request.resource.data.name is string && request.resource.data.name.size() <= 150 &&
+                      request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
+                      request.resource.data.role is string && request.resource.data.role.size() <= 50 &&
+                      request.resource.data.contactReason is string && request.resource.data.contactReason.size() <= 50 &&
+                      request.resource.data.submittedAt == request.time;
     }
   }
 }
-

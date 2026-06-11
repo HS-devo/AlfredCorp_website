@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Code2, Server, LineChart, Users, HeartPulse, Calculator, CalendarClock, ChevronDown, Megaphone } from 'lucide-react';
+import { Code2, Server, LineChart, Users, HeartPulse, Calculator, CalendarClock, ChevronDown, ChevronRight, Megaphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const services = [
@@ -93,7 +93,7 @@ const services = [
   },
 ];
 
-export function ServicesSection() {
+export function ServicesSection({ onContactClick }: { onContactClick?: (reason?: string) => void }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -107,10 +107,10 @@ export function ServicesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-100 tracking-tight mb-4">
-            Agent Abilities
+            What our AI agents can do
           </h2>
           <p className="text-lg text-slate-400">
-            A powerful suite of agents offering corprate services grounded by professional oversight.
+            A powerful suite of agents offering corporate services grounded by professional oversight.
           </p>
         </div>
 
@@ -177,10 +177,25 @@ export function ServicesSection() {
           })}
         </div>
 
-        <div className="mt-16 text-center">
-          <p className="text-sm font-mono text-slate-400 uppercase tracking-widest text-shadow-glow">
+        <div className="mt-16 text-center max-w-2xl mx-auto flex flex-col items-center gap-6">
+          <p className="text-sm font-mono text-slate-400 uppercase tracking-widest text-shadow-glow leading-relaxed">
             We are continuously developing new capabilities and specialized agents to meet your evolving business needs.
           </p>
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
+              Don't see a service you need?
+            </span>
+            <span className="text-sm font-heading font-semibold text-slate-300">
+              Submit a custom agent development request.
+            </span>
+            <button
+              onClick={() => onContactClick?.('custom_dev')}
+              className="mt-2 group btn-primary px-6 py-2.5 rounded font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer border border-amber"
+            >
+              Request
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

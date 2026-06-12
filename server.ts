@@ -11,7 +11,7 @@ dotenv.config();
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = 5000;
 
   app.post("/api/matrix", async (req, res) => {
     const FALLBACK_MATRIX = {
@@ -536,7 +536,7 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, allowedHosts: true, host: '0.0.0.0' },
       appType: "spa",
     });
     app.use(vite.middlewares);

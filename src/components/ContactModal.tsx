@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, Loader } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -95,17 +96,31 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
         payload.message = message;
       }
 
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      const messageParts: string[] = [];
+      if (payload.contactReason) messageParts.push(`Reason: ${payload.contactReason}`);
+      if (payload.role) messageParts.push(`Role: ${payload.role}`);
+      if (payload.phone) messageParts.push(`Phone: ${payload.phone}`);
+      if (payload.companyName) messageParts.push(`Company: ${payload.companyName}`);
+      if (payload.website) messageParts.push(`Website: ${payload.website}`);
+      if (payload.expectedUsers) messageParts.push(`Expected users: ${payload.expectedUsers}`);
+      if (payload.projectScope) messageParts.push(`Project scope: ${payload.projectScope}`);
+      if (payload.projectSuccess) messageParts.push(`Success looks like: ${payload.projectSuccess}`);
+      if (payload.additionalNote) messageParts.push(`Additional note: ${payload.additionalNote}`);
+      if (payload.professionalService) messageParts.push(`Service type: ${payload.professionalService}`);
+      if (payload.otherService) messageParts.push(`Other service: ${payload.otherService}`);
+      if (payload.linkedinUrl) messageParts.push(`LinkedIn: ${payload.linkedinUrl}`);
+      if (payload.message) messageParts.push(`Message: ${payload.message}`);
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      const { error: supabaseError } = await supabase
+        .from('contact_submissions')
+        .insert({
+          name: payload.name,
+          email: payload.email,
+          message: messageParts.join('\n'),
+        });
+
+      if (supabaseError) {
+        throw new Error(supabaseError.message);
       }
 
       setSubmitted(true);

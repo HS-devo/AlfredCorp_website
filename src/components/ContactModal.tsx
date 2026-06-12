@@ -116,6 +116,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
         .insert({
           name: payload.name,
           email: payload.email,
+          role: payload.role || null,
           message: messageParts.join('\n'),
         });
 

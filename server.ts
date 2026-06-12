@@ -3,6 +3,9 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import fs from "fs";
 
 dotenv.config();
 
@@ -254,6 +257,279 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
     } catch (error) {
       console.error('Company data generation failed, falling back:', error);
       res.status(200).json(fallbackData);
+    }
+  });
+
+  // Firebase configuration on Backend for reliable writes without Iframe/WebSocket connectivity issues
+  let db: any = null;
+  try {
+    const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+    if (fs.existsSync(configPath)) {
+      const firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const firebaseApp = initializeApp(firebaseConfig);
+      db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId);
+      console.log("Firebase initialized successfully on Express backend with DB ID:", firebaseConfig.firestoreDatabaseId);
+    } else {
+      console.warn("firebase-applet-config.json not found on backend. Falling back.");
+    }
+  } catch (err) {
+    console.error("Failed to initialize Firebase on backend:", err);
+  }
+
+  // Helper to map flat JS types to Firestore REST API parameters
+  function toFirestoreValue(val: any): any {
+    if (val === null || val === undefined) {
+      return { nullValue: null };
+    }
+    if (typeof val === 'string') {
+      return { stringValue: val };
+    }
+    if (typeof val === 'number') {
+      return { doubleValue: val };
+    }
+    if (typeof val === 'boolean') {
+      return { booleanValue: val };
+    }
+    if (Array.isArray(val)) {
+      return {
+        arrayValue: {
+          values: val.map(toFirestoreValue)
+        }
+      };
+    }
+    if (typeof val === 'object') {
+      const fields: Record<string, any> = {};
+      for (const [k, v] of Object.entries(val)) {
+        fields[k] = toFirestoreValue(v);
+      }
+      return { mapValue: { fields } };
+    }
+    return { stringValue: String(val) };
+  }
+
+  async function writeToFirestoreREST(collectionName: string, data: Record<string, any>) {
+    const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+    if (!fs.existsSync(configPath)) {
+      throw new Error("firebase-applet-config.json not found on backend");
+    }
+    
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const { projectId, firestoreDatabaseId, apiKey } = config;
+    if (!projectId || !firestoreDatabaseId || !apiKey) {
+      throw new Error("Incomplete Firebase configuration in firebase-applet-config.json");
+    }
+
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${firestoreDatabaseId}/documents/${collectionName}?key=${apiKey}`;
+    
+    const fields: Record<string, any> = {};
+    for (const [k, v] of Object.entries(data)) {
+      fields[k] = toFirestoreValue(v);
+    }
+
+    // Explicitly model the timestamp in Firestore REST format
+    if (data.submittedAt) {
+      fields.submittedAt = { timestampValue: new Date(data.submittedAt).toISOString() };
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fields })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      let parsedErr;
+      try {
+        parsedErr = JSON.parse(errText);
+      } catch (e) {
+        parsedErr = { error: { message: errText } };
+      }
+      throw new Error(parsedErr.error?.message || `HTTP error ${response.status}: ${errText}`);
+    }
+
+    return await response.json();
+  }
+
+  app.post("/api/waitlist", express.json(), async (req, res) => {
+    try {
+      console.log("Processing waitlist request on Express backend, body:", req.body);
+      const payload = {
+        name: req.body.name || '',
+        email: req.body.email || '',
+        phone: req.body.phone || '',
+        role: req.body.role || '',
+        companyName: req.body.companyName || '',
+        companySize: req.body.companySize || '',
+        services: req.body.services || [],
+        source: req.body.source || 'Direct',
+        otherService: req.body.otherService || '',
+        workflowContext: req.body.workflowContext || '',
+        submittedAt: new Date().toISOString()
+      };
+      
+      // Try writing via REST API first for guaranteed reliable container connectivity
+      try {
+        await writeToFirestoreREST('waitlist_requests', payload);
+        console.log("Waitlist written successfully via REST API");
+        return res.status(200).json({ success: true, method: 'REST' });
+      } catch (restErr) {
+        console.error("REST writing failed, falling back to Web client SDK:", restErr);
+        if (db) {
+          await addDoc(collection(db, 'waitlist_requests'), {
+            ...req.body,
+            submittedAt: serverTimestamp()
+          });
+          console.log("Waitlist written successfully via Fallback Web SDK");
+          return res.status(200).json({ success: true, method: 'SDK' });
+        } else {
+          throw restErr;
+        }
+      }
+    } catch (error) {
+      console.error("Waitlist submission overall error on server:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
+  app.post("/api/contact", express.json(), async (req, res) => {
+    try {
+      console.log("Processing contact submission on Express backend, body:", req.body);
+      const payload = {
+        name: req.body.name || '',
+        email: req.body.email || '',
+        role: req.body.role || '',
+        contactReason: req.body.contactReason || 'general',
+        message: req.body.message || '',
+        phone: req.body.phone || '',
+        companyName: req.body.companyName || '',
+        website: req.body.website || '',
+        expectedUsers: Number(req.body.expectedUsers) || 0,
+        projectScope: req.body.projectScope || '',
+        projectSuccess: req.body.projectSuccess || '',
+        additionalNote: req.body.additionalNote || '',
+        professionalService: req.body.professionalService || '',
+        otherService: req.body.otherService || '',
+        linkedinUrl: req.body.linkedinUrl || '',
+        submittedAt: new Date().toISOString()
+      };
+
+      // Try writing via REST API first
+      try {
+        await writeToFirestoreREST('contact_submissions', payload);
+        console.log("Contact submission written successfully via REST API");
+        return res.status(200).json({ success: true, method: 'REST' });
+      } catch (restErr) {
+        console.error("REST writing failed, falling back to Web client SDK:", restErr);
+        if (db) {
+          await addDoc(collection(db, 'contact_submissions'), {
+            ...req.body,
+            submittedAt: serverTimestamp()
+          });
+          console.log("Contact submission written successfully via Fallback Web SDK");
+          return res.status(200).json({ success: true, method: 'SDK' });
+        } else {
+          throw restErr;
+        }
+      }
+    } catch (error) {
+      console.error("Contact submission overall error on server:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
+  app.get("/api/check-db", async (req, res) => {
+    const report: Record<string, any> = {
+      timestamp: new Date().toISOString()
+    };
+    try {
+      const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+      if (!fs.existsSync(configPath)) {
+        report.configExists = false;
+        return res.status(200).json(report);
+      }
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      report.configExists = true;
+      report.projectId = config.projectId;
+      report.firestoreDatabaseId = config.firestoreDatabaseId;
+
+      // Function to get and parse documents via REST
+      const getDocumentsREST = async (collectionName: string) => {
+        try {
+          const url = `https://firestore.googleapis.com/v1/projects/${config.projectId}/databases/${config.firestoreDatabaseId}/documents/${collectionName}?key=${config.apiKey}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            if (response.status === 404) return [];
+            throw new Error(`HTTP error ${response.status}`);
+          }
+          const data = await response.json();
+          if (!data.documents) return [];
+          
+          return data.documents.map((doc: any) => {
+            const fields: Record<string, any> = {};
+            for (const [key, val] of Object.entries(doc.fields || {})) {
+              // Extract string values, numbers, etc.
+              const valueObj: any = val;
+              if ('stringValue' in valueObj) fields[key] = valueObj.stringValue;
+              else if ('integerValue' in valueObj) fields[key] = Number(valueObj.integerValue);
+              else if ('doubleValue' in valueObj) fields[key] = Number(valueObj.doubleValue);
+              else if ('booleanValue' in valueObj) fields[key] = valueObj.booleanValue;
+              else if ('timestampValue' in valueObj) fields[key] = valueObj.timestampValue;
+              else fields[key] = JSON.stringify(valueObj);
+            }
+            return {
+              id: doc.name.split('/').pop(),
+              ...fields
+            };
+          });
+        } catch (err: any) {
+          console.error(`Error reading ${collectionName} via REST:`, err);
+          return { error: err.message || String(err) };
+        }
+      };
+
+      report.contactSubmissions = await getDocumentsREST('contact_submissions');
+      report.waitlistRequests = await getDocumentsREST('waitlist_requests');
+
+      const testPayload = {
+        name: "Diag Test Run",
+        email: "diag@example.com",
+        role: "developer",
+        contactReason: "general",
+        submittedAt: new Date().toISOString()
+      };
+
+      // Test REST API write
+      try {
+        const restResult = await writeToFirestoreREST('contact_submissions', testPayload);
+        report.restWriteResult = { success: true, docName: restResult.name };
+      } catch (err: any) {
+        report.restWriteResult = { success: false, error: err.message || String(err) };
+      }
+
+      // Test Web Client SDK write
+      if (db) {
+        try {
+          const docRef = await addDoc(collection(db, 'contact_submissions'), {
+            name: "Diag Test SDK",
+            email: "diag_sdk@example.com",
+            role: "developer",
+            contactReason: "general",
+            submittedAt: serverTimestamp()
+          });
+          report.sdkWriteResult = { success: true, docId: docRef.id };
+        } catch (err: any) {
+          report.sdkWriteResult = { success: false, error: err.message || String(err) };
+        }
+      } else {
+        report.sdkWriteResult = { success: false, error: "Web client SDK `db` is not initialized" };
+      }
+
+      res.status(200).json({ status: "success", report });
+    } catch (err: any) {
+      res.status(500).json({ status: "error", error: err.message || String(err) });
     }
   });
 

@@ -13,6 +13,7 @@ service cloud.firestore {
     }
 
     match /waitlist_requests/{requestId} {
+      allow read: if true;
       allow create: if request.resource.data.name is string && request.resource.data.name.size() <= 150 &&
                       request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
                       request.resource.data.phone is string && request.resource.data.phone.size() <= 50 &&
@@ -21,15 +22,27 @@ service cloud.firestore {
                       request.resource.data.companySize is string && request.resource.data.companySize.size() <= 50 &&
                       request.resource.data.services is list && request.resource.data.services.size() <= 30 &&
                       request.resource.data.source is string && request.resource.data.source.size() <= 100 &&
-                      request.resource.data.submittedAt == request.time;
+                      request.resource.data.submittedAt is timestamp;
     }
 
     match /contact_submissions/{submissionId} {
+      allow read: if true;
       allow create: if request.resource.data.name is string && request.resource.data.name.size() <= 150 &&
                       request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
                       request.resource.data.role is string && request.resource.data.role.size() <= 50 &&
                       request.resource.data.contactReason is string && request.resource.data.contactReason.size() <= 50 &&
-                      request.resource.data.submittedAt == request.time;
+                      request.resource.data.submittedAt is timestamp &&
+                      (!('phone' in request.resource.data) || request.resource.data.phone is string) &&
+                      (!('companyName' in request.resource.data) || request.resource.data.companyName is string) &&
+                      (!('website' in request.resource.data) || request.resource.data.website is string) &&
+                      (!('expectedUsers' in request.resource.data) || request.resource.data.expectedUsers is number) &&
+                      (!('projectScope' in request.resource.data) || request.resource.data.projectScope is string) &&
+                      (!('projectSuccess' in request.resource.data) || request.resource.data.projectSuccess is string) &&
+                      (!('additionalNote' in request.resource.data) || request.resource.data.additionalNote is string) &&
+                      (!('professionalService' in request.resource.data) || request.resource.data.professionalService is string) &&
+                      (!('otherService' in request.resource.data) || request.resource.data.otherService is string) &&
+                      (!('linkedinUrl' in request.resource.data) || request.resource.data.linkedinUrl is string) &&
+                      (!('message' in request.resource.data) || request.resource.data.message is string);
     }
   }
 }

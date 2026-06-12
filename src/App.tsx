@@ -14,6 +14,8 @@ function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
 
+
+
   const openContactModal = (reason?: string) => {
     setContactReason(reason);
     setIsContactModalOpen(true);
@@ -51,7 +53,7 @@ function App() {
               </div>
               <span className="font-heading font-bold text-xl tracking-tight text-slate-100">Alfred <span className="text-slate-500 font-normal">Corp</span></span>
             </div>
-            <div className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-widest text-slate-400">
+            <div className="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-slate-400">
               <button onClick={() => scrollToSection('services')} className="hover:text-amber transition-colors cursor-pointer">Services</button>
               <button onClick={() => scrollToSection('pricing')} className="hover:text-amber transition-colors cursor-pointer">Pricing</button>
               <button onClick={() => scrollToSection('about-us')} className="hover:text-amber transition-colors cursor-pointer">About Us</button>
@@ -94,11 +96,12 @@ function App() {
                 </button>
                 <button 
                   onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }}
-                  className="w-full text-left hover:text-amber transition-colors flex items-center gap-2"
+                  className="w-full text-left hover:text-amber transition-colors flex items-center gap-2 animate-pulse"
                 >
                   Request Invite
                   <ArrowRight className="w-4 h-4" />
                 </button>
+
               </div>
             </motion.div>
           )}

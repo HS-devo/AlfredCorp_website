@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
-import { handleFirestoreError, OperationType } from '../lib/firestore-error';
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -43,7 +40,6 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
     setSubmitting(true);
     setErrorMessage(null);
 
-    const path = 'waitlist_requests';
     try {
       const payload = {
         name,
@@ -55,20 +51,27 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
         services: selectedServices,
         otherService: selectedServices.includes('Other') ? otherService : '',
         workflowContext: selectedServices.length > 0 ? workflowContext : '',
-        source,
-        submittedAt: serverTimestamp()
+        source
       };
 
-      await addDoc(collection(db, path), payload);
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      }
+
       setSubmitted(true);
     } catch (err) {
       console.error("Waitlist submit error:", err);
-      setErrorMessage("Unable to submit. Please check your inputs or try again.");
-      try {
-        handleFirestoreError(err, OperationType.WRITE, path);
-      } catch (fError) {
-        // Log formatted error or propagate if running within active test context
-      }
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(`Unable to submit: ${errMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -260,7 +263,7 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                           >
                             <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Specify Other Service <span className="text-red-500">*</span></label>
                             <input 
-                              required 
+                              required={selectedServices.includes('Other')} 
                               type="text" 
                               value={otherService}
                               onChange={(e) => setOtherService(e.target.value)}

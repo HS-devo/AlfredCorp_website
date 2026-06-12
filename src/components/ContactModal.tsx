@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, Loader } from 'lucide-react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
-import { handleFirestoreError, OperationType } from '../lib/firestore-error';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -66,14 +63,12 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
     setSubmitting(true);
     setErrorMessage(null);
 
-    const path = 'contact_submissions';
     try {
       const payload: Record<string, any> = {
         name,
         email,
         role,
-        contactReason,
-        submittedAt: serverTimestamp()
+        contactReason
       };
 
       // Reason-dependent fields
@@ -100,16 +95,24 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
         payload.message = message;
       }
 
-      await addDoc(collection(db, path), payload);
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      }
+
       setSubmitted(true);
     } catch (err) {
       console.error("Contact Form submit error:", err);
-      setErrorMessage("Unable to save message. Please verify all required fields and try again.");
-      try {
-        handleFirestoreError(err, OperationType.WRITE, path);
-      } catch (fError) {
-        // Safe console fail or custom test feedback
-      }
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(`Unable to save message: ${errMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -239,7 +242,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                         >
                           <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1 mt-4">Phone Number <span className="text-red-500">*</span></label>
                           <input 
-                            required 
+                            required={contactReason === 'custom_dev' || contactReason === 'work'} 
                             type="tel" 
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
@@ -261,7 +264,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                             <div>
                               <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Company Name <span className="text-red-500">*</span></label>
                               <input 
-                                required 
+                                required={contactReason === 'custom_dev'} 
                                 type="text" 
                                 value={companyName}
                                 onChange={(e) => setCompanyName(e.target.value)}
@@ -272,7 +275,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                             <div>
                               <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Website <span className="text-red-500">*</span></label>
                               <input 
-                                required 
+                                required={contactReason === 'custom_dev'} 
                                 type="url" 
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
@@ -285,7 +288,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                           <div>
                             <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Expected number of users <span className="text-red-500">*</span></label>
                             <input 
-                              required 
+                              required={contactReason === 'custom_dev'} 
                               type="number" 
                               min="1" 
                               value={expectedUsers}
@@ -298,7 +301,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                           <div>
                             <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Describe Project Scope <span className="text-red-500">*</span></label>
                             <textarea 
-                              required 
+                              required={contactReason === 'custom_dev'} 
                               rows={3} 
                               value={projectScope}
                               onChange={(e) => setProjectScope(e.target.value)}
@@ -310,7 +313,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                           <div>
                             <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">What project success looks like for you <span className="text-red-500">*</span></label>
                             <textarea 
-                              required 
+                              required={contactReason === 'custom_dev'} 
                               rows={2} 
                               value={projectSuccess}
                               onChange={(e) => setProjectSuccess(e.target.value)}
@@ -343,7 +346,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                           <div>
                             <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Type of Professional Service <span className="text-red-500">*</span></label>
                             <select 
-                              required 
+                              required={contactReason === 'work'} 
                               value={profService}
                               onChange={(e) => setProfService(e.target.value)}
                               className="w-full px-3 py-2 border border-steel bg-obsidian text-slate-200 rounded-sm font-mono text-xs focus:ring-1 focus:ring-amber focus:border-amber outline-none appearance-none"
@@ -364,7 +367,7 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
                             >
                               <label className="block text-xs font-mono text-slate-300 tracking-widest uppercase mb-1">Specify Service <span className="text-red-500">*</span></label>
                               <input 
-                                required 
+                                required={contactReason === 'work' && profService === 'other'} 
                                 type="text"
                                 value={otherService}
                                 onChange={(e) => setOtherService(e.target.value)}

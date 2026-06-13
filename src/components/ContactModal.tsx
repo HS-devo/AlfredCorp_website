@@ -114,10 +114,21 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
       const { error: supabaseError } = await supabase
         .from('contact_submissions')
         .insert({
-          name: payload.name,
-          email: payload.email,
-          role: payload.role || null,
-          message: messageParts.join('\n'),
+          name:                  payload.name                || '',
+          email:                 payload.email               || '',
+          role:                  payload.role                || '',
+          contact_reason:        payload.contactReason       || '',
+          message:               messageParts.join('\n'),
+          phone:                 payload.phone               || '',
+          company_name:          payload.companyName         || '',
+          website:               payload.website             || '',
+          expected_users:        Number(payload.expectedUsers) || 0,
+          project_scope:         payload.projectScope        || '',
+          project_success:       payload.projectSuccess      || '',
+          additional_note:       payload.additionalNote      || '',
+          professional_service:  payload.professionalService || '',
+          other_service:         payload.otherService        || '',
+          linkedin_url:          payload.linkedinUrl         || '',
         });
 
       if (supabaseError) {

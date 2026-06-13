@@ -124,6 +124,16 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
         throw new Error(supabaseError.message);
       }
 
+      fetch('/api/contact/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          message: messageParts.join('\n'),
+        }),
+      }).catch((err) => console.warn('Confirmation email failed (non-blocking):', err));
+
       setSubmitted(true);
     } catch (err) {
       console.error("Contact Form submit error:", err);

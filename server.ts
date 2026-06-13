@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import fs from "fs";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -437,6 +438,66 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
     } catch (error) {
       console.error("Contact submission overall error on server:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
+  app.post("/api/contact/notify", express.json(), async (req, res) => {
+    const { name, email, message } = req.body || {};
+    if (!name || !email) {
+      return res.status(400).json({ error: "name and email are required" });
+    }
+
+    const smtpUser = process.env.ZOHO_SMTP_USER;
+    const smtpPass = process.env.ZOHO_SMTP_PASS;
+
+    if (!smtpUser || !smtpPass) {
+      console.error("ZOHO_SMTP_USER or ZOHO_SMTP_PASS not set — skipping email");
+      return res.status(503).json({ error: "Email service not configured" });
+    }
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.com",
+        port: 465,
+        secure: true,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+
+      await transporter.sendMail({
+        from: `"Alfred Corp" <${smtpUser}>`,
+        to: email,
+        replyTo: smtpUser,
+        subject: "We received your message — Alfred Corp",
+        text: [
+          `Hi ${name},`,
+          "",
+          "Thanks for reaching out! We've received your message and will follow up with you shortly.",
+          "",
+          message ? `Here's a copy of what you sent:\n\n${message}` : "",
+          "",
+          "— The Alfred Corp Team",
+          "info@alfred.com",
+        ].join("\n"),
+        html: `
+          <div style="font-family:monospace;max-width:560px;margin:0 auto;color:#1a1a1a;">
+            <div style="background:#0a0a0a;padding:24px 32px;border-bottom:2px solid #d4a843;">
+              <span style="color:#d4a843;font-size:18px;font-weight:700;letter-spacing:2px;">ALFRED CORP</span>
+            </div>
+            <div style="padding:32px;">
+              <p style="margin:0 0 16px;">Hi <strong>${name}</strong>,</p>
+              <p style="margin:0 0 16px;">Thanks for reaching out. We've received your message and will follow up with you shortly.</p>
+              ${message ? `<div style="background:#f5f5f5;border-left:3px solid #d4a843;padding:16px;margin:24px 0;font-size:13px;white-space:pre-wrap;">${message.replace(/</g, "&lt;")}</div>` : ""}
+              <p style="margin:24px 0 0;">— The Alfred Corp Team<br/><a href="mailto:info@alfred.com" style="color:#d4a843;">info@alfred.com</a></p>
+            </div>
+          </div>
+        `,
+      });
+
+      console.log(`Confirmation email sent to ${email}`);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error("Failed to send confirmation email:", err);
+      return res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
     }
   });
 

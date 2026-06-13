@@ -476,7 +476,7 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
           message ? `Here's a copy of what you sent:\n\n${message}` : "",
           "",
           "— The Alfred Corp Team",
-          "info@alfred.com",
+          "info@alfredcorp.com",
         ].join("\n"),
         html: `
           <div style="font-family:monospace;max-width:560px;margin:0 auto;color:#1a1a1a;">
@@ -487,7 +487,7 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
               <p style="margin:0 0 16px;">Hi <strong>${name}</strong>,</p>
               <p style="margin:0 0 16px;">Thanks for reaching out. We've received your message and will follow up with you shortly.</p>
               ${message ? `<div style="background:#f5f5f5;border-left:3px solid #d4a843;padding:16px;margin:24px 0;font-size:13px;white-space:pre-wrap;">${message.replace(/</g, "&lt;")}</div>` : ""}
-              <p style="margin:24px 0 0;">— The Alfred Corp Team<br/><a href="mailto:info@alfred.com" style="color:#d4a843;">info@alfred.com</a></p>
+              <p style="margin:24px 0 0;">— The Alfred Corp Team<br/><a href="mailto:info@alfredcorp.com" style="color:#d4a843;">info@alfredcorp.com</a></p>
             </div>
           </div>
         `,

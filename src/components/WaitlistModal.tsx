@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase } from '../lib/supabase';
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -41,31 +42,30 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
     setErrorMessage(null);
 
     try {
-      const payload = {
-        name,
-        email,
-        phone,
-        role,
-        companyName,
-        companySize,
-        services: selectedServices,
-        otherService: selectedServices.includes('Other') ? otherService : '',
-        workflowContext: selectedServices.length > 0 ? workflowContext : '',
-        source
-      };
+      const { error: supabaseError } = await supabase
+        .from('waitlist_requests')
+        .insert({
+          name:             name,
+          email:            email,
+          phone:            phone,
+          role:             role,
+          company_name:     companyName,
+          company_size:     companySize,
+          services:         selectedServices.join(', '),
+          other_service:    selectedServices.includes('Other') ? otherService : '',
+          workflow_context: selectedServices.length > 0 ? workflowContext : '',
+          source:           source,
+        });
 
-      const res = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      if (supabaseError) {
+        throw new Error(supabaseError.message);
       }
+
+      fetch('/api/waitlist/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email }),
+      }).catch((err) => console.warn('Waitlist confirmation email failed (non-blocking):', err));
 
       setSubmitted(true);
     } catch (err) {

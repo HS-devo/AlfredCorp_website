@@ -501,6 +501,58 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
     }
   });
 
+  app.post("/api/waitlist/notify", express.json(), async (req, res) => {
+    const { name, email } = req.body || {};
+    if (!name || !email) {
+      return res.status(400).json({ error: "name and email are required" });
+    }
+    const smtpUser = process.env.ZOHO_SMTP_USER;
+    const smtpPass = process.env.ZOHO_SMTP_PASS;
+    if (!smtpUser || !smtpPass) {
+      return res.status(503).json({ error: "Email service not configured" });
+    }
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.com",
+        port: 465,
+        secure: true,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+      await transporter.sendMail({
+        from: `"Alfred Corp" <${smtpUser}>`,
+        to: email,
+        replyTo: smtpUser,
+        subject: "Your access request was received — Alfred Corp",
+        text: [
+          `Hi ${name},`,
+          "",
+          "Thanks for requesting access to the Alfred Corp platform. We've received your request and will be in touch soon. Invites are dispatched on Tuesdays.",
+          "",
+          "— The Alfred Corp Team",
+          "info@alfredcorp.com",
+        ].join("\n"),
+        html: `
+          <div style="font-family:monospace;max-width:560px;margin:0 auto;color:#1a1a1a;">
+            <div style="background:#0a0a0a;padding:24px 32px;border-bottom:2px solid #d4a843;">
+              <span style="color:#d4a843;font-size:18px;font-weight:700;letter-spacing:2px;">ALFRED CORP</span>
+            </div>
+            <div style="padding:32px;">
+              <p style="margin:0 0 16px;">Hi <strong>${name}</strong>,</p>
+              <p style="margin:0 0 16px;">Thanks for requesting access to the Alfred Corp platform. We've received your request and will be in touch soon.</p>
+              <p style="margin:0 0 16px;color:#555;">Invites are dispatched on Tuesdays.</p>
+              <p style="margin:24px 0 0;">— The Alfred Corp Team<br/><a href="mailto:info@alfredcorp.com" style="color:#d4a843;">info@alfredcorp.com</a></p>
+            </div>
+          </div>
+        `,
+      });
+      console.log(`Waitlist confirmation email sent to ${email}`);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error("Failed to send waitlist confirmation email:", err);
+      return res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  });
+
   app.get("/api/check-db", async (req, res) => {
     const report: Record<string, any> = {
       timestamp: new Date().toISOString()

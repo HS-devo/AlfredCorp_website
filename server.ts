@@ -553,6 +553,34 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
     }
   });
 
+  app.post("/api/fallback-notify", express.json(), async (req, res) => {
+    const { type, payload } = req.body || {};
+    const smtpUser = process.env.ZOHO_SMTP_USER;
+    const smtpPass = process.env.ZOHO_SMTP_PASS;
+    if (!smtpUser || !smtpPass) {
+      return res.status(503).json({ error: "Email service not configured" });
+    }
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.com",
+        port: 465,
+        secure: true,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+      await transporter.sendMail({
+        from: `"Alfred Corp System" <${smtpUser}>`,
+        to: "info@alfredcorp.com",
+        subject: `[Fallback] New ${type} Submission`,
+        text: `Supabase fallback triggered for ${type}.\n\nPayload:\n${JSON.stringify(payload, null, 2)}`,
+      });
+      console.log(`Fallback notification email sent to info@alfredcorp.com for ${type}`);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error("Failed to send fallback email:", err);
+      return res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  });
+
   app.get("/api/check-db", async (req, res) => {
     const report: Record<string, any> = {
       timestamp: new Date().toISOString()

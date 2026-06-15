@@ -15,7 +15,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 
 export const supabase = createClient(
-  SUPABASE_URL ?? '',
-  SUPABASE_KEY ?? '',
+  SUPABASE_URL || 'https://placeholder.supabase.co',
+  SUPABASE_KEY || 'public-anon-key',
   { db: { schema: 'public' } }
 );

@@ -132,18 +132,26 @@ export function ContactModal({ isOpen, onClose, defaultReason }: ContactModalPro
         });
 
       if (supabaseError) {
-        throw new Error(supabaseError.message);
+        console.warn('Supabase contact insert failed, triggering fallback notification:', supabaseError);
+        await fetch('/api/fallback-notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'contact',
+            payload: payload
+          }),
+        }).catch(err => console.error('Fallback notify failed:', err));
+      } else {
+        fetch('/api/contact/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: payload.name,
+            email: payload.email,
+            message: messageParts.join('\n'),
+          }),
+        }).catch((err) => console.warn('Confirmation email failed (non-blocking):', err));
       }
-
-      fetch('/api/contact/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: payload.name,
-          email: payload.email,
-          message: messageParts.join('\n'),
-        }),
-      }).catch((err) => console.warn('Confirmation email failed (non-blocking):', err));
 
       setSubmitted(true);
     } catch (err) {

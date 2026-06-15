@@ -4,6 +4,7 @@ import { ContactModal } from './components/ContactModal';
 import { ServicesSection } from './components/ServicesSection';
 import { PricingSection } from './components/PricingSection';
 import { FAQSection } from './components/FAQSection';
+import { TestimonialsSection } from './components/TestimonialsSection';
 import { ShieldCheck, Zap, History, ChevronRight, Menu, X, ArrowRight } from 'lucide-react';
 import { motion, useScroll, AnimatePresence } from 'motion/react';
 
@@ -14,7 +15,28 @@ function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
 
-
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.substring(1);
+    
+    if (params.get('contact') === 'true' || hash === 'contact') {
+      setIsContactModalOpen(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (hash) {
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) {
+          const headerOffset = 80;
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
+    }
+  }, []);
 
   const openContactModal = (reason?: string) => {
     setContactReason(reason);
@@ -58,6 +80,7 @@ function App() {
               <button onClick={() => scrollToSection('pricing')} className="hover:text-amber transition-colors cursor-pointer">Pricing</button>
               <button onClick={() => scrollToSection('about-us')} className="hover:text-amber transition-colors cursor-pointer">About Us</button>
               <button onClick={() => scrollToSection('faq')} className="hover:text-amber transition-colors cursor-pointer">FAQ</button>
+              <a href="/blog/" className="hover:text-amber transition-colors cursor-pointer">Blog</a>
               <button onClick={() => openContactModal()} className="hover:text-amber transition-colors cursor-pointer">Contact us</button>
             </div>
 
@@ -88,6 +111,7 @@ function App() {
                 <button onClick={() => scrollToSection('pricing')} className="w-full text-left hover:text-amber transition-colors">Pricing</button>
                 <button onClick={() => scrollToSection('about-us')} className="w-full text-left hover:text-amber transition-colors">About Us</button>
                 <button onClick={() => scrollToSection('faq')} className="w-full text-left hover:text-amber transition-colors">FAQ</button>
+                <a href="/blog/" className="w-full text-left hover:text-amber transition-colors block">Blog</a>
                 <button 
                   onClick={() => { openContactModal(); setIsMobileMenuOpen(false); }}
                   className="w-full text-left hover:text-amber transition-colors text-amber"
@@ -236,6 +260,9 @@ function App() {
           </motion.div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* FAQ Section */}
       <FAQSection onContactClick={() => openContactModal()} />

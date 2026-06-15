@@ -58,14 +58,24 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
         });
 
       if (supabaseError) {
-        throw new Error(supabaseError.message);
+        console.warn('Supabase waitlist insert failed, triggering fallback notification:', supabaseError);
+        await fetch('/api/fallback-notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'waitlist',
+            payload: {
+              name, email, phone, role, companyName, companySize, selectedServices, otherService, workflowContext, source
+            }
+          }),
+        }).catch(err => console.error('Fallback notify failed:', err));
+      } else {
+        fetch('/api/waitlist/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email }),
+        }).catch((err) => console.warn('Waitlist confirmation email failed (non-blocking):', err));
       }
-
-      fetch('/api/waitlist/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email }),
-      }).catch((err) => console.warn('Waitlist confirmation email failed (non-blocking):', err));
 
       setSubmitted(true);
     } catch (err) {

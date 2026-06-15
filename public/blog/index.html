@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog &amp; Case Studies | Alfred Corp</title>
+  <meta name="description" content="Explore Alfred Corp case studies and insights on AI-powered business automation, fractional services, and professional-grade AI agents." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://alfredcorp.com/blog/" />
+  <meta property="og:title" content="Blog &amp; Case Studies | Alfred Corp" />
+  <meta property="og:description" content="Real-world results from Alfred Corp's agentic platform — case studies in accounting, OHS, and B2G software." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://alfredcorp.com/blog/" />
+  <meta property="og:image" content="https://alfredcorp.com/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Blog & Case Studies — Alfred Corp",
+    "url": "https://alfredcorp.com/blog/",
+    "publisher": { "@type": "Organization", "name": "Alfred Corp", "url": "https://alfredcorp.com/" }
+  }
+  </script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--obsidian:#FAF8F5;--carbon:#F4EFEB;--amber:#B12224;--steel:#D3C5B5;--slate-100:#1B1A18;--slate-200:#2D2A26;--slate-300:#44403B;--slate-400:#5E5851;--slate-500:#8C8274;--slate-600:#A89D8E}
+    body{font-family:'Inter',sans-serif;background-color:var(--obsidian);color:var(--slate-300);line-height:1.6;min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    nav{position:fixed;top:0;left:0;right:0;z-index:40;background-color:rgba(250,248,245,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--steel);padding:0 1rem}
+    @media (min-width: 640px) { nav { padding: 0 1.5rem; } }
+    @media (min-width: 1024px) { nav { padding: 0 2rem; } }
+    .nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:4rem}
+    @media (min-width: 640px) { .nav-inner { height:5rem } }
+    .nav-logo{display:flex;align-items:center;gap:0.5rem}
+    .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:4px;background:white}
+    .nav-logo-text{font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.25rem;color:var(--slate-100);letter-spacing:-0.5px}
+    .nav-logo-text em{font-style:normal;color:var(--slate-500);font-weight:400}
+    .nav-links{display:flex;gap:1.5rem;align-items:center}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--slate-400);transition:color 0.2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    
+    #mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--slate-200);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    #mobile-menu-toggle:hover {
+      color: var(--amber);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      background-color: rgba(250, 248, 245, 0.98);
+      border-bottom: 1px solid var(--steel);
+      padding: 1.5rem;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 39;
+    }
+    .mobile-menu .nav-link {
+      font-size: 0.75rem;
+      width: 100%;
+      text-align: left;
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #mobile-menu-toggle { display: block; }
+      .mobile-menu.open { display: flex; }
+    }
+
+    main{max-width:1280px;margin:0 auto;padding:8rem 1.5rem 4rem}
+    .eyebrow{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--amber);border:1px solid rgba(177,34,36,0.3);background:rgba(177,34,36,0.08);padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:1.5rem}
+    h1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3rem);color:var(--slate-100);letter-spacing:-0.03em;line-height:1.15;margin-bottom:1rem}
+    .subtitle{color:var(--slate-300);font-size:1.05rem;max-width:600px;margin-bottom:3.5rem}
+    .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+    .post-card{background:var(--carbon);border:1px solid var(--steel);border-radius:4px;padding:1.75rem;display:flex;flex-direction:column;gap:0.75rem;transition:border-color 0.2s,box-shadow 0.2s}
+    .post-card:hover{border-color:rgba(177,34,36,0.4);box-shadow:0 0 20px rgba(177,34,36,0.08)}
+    .post-tag{font-family:'JetBrains Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber)}
+    .post-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.05rem;color:var(--slate-100);line-height:1.35;transition:color 0.2s}
+    .post-card:hover .post-title{color:var(--amber)}
+    .post-excerpt{font-size:0.875rem;color:var(--slate-300);line-height:1.65;flex:1}
+    .post-meta{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--slate-400);padding-top:0.75rem;border-top:1px solid var(--steel)}
+    .post-stat{color:var(--amber);border:1px solid rgba(177,34,36,0.3);padding:0.2rem 0.5rem;border-radius:3px}
+    .read-more{display:inline-flex;align-items:center;gap:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);margin-top:0.5rem}
+    footer{background:var(--obsidian);border-top:1px solid var(--steel);padding:3rem 1.5rem}
+    .footer-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{display:flex;align-items:center;gap:0.5rem}
+    .footer-logo img{width:24px;height:24px;object-fit:contain;border-radius:3px;background:var(--carbon);border:1px solid var(--steel);opacity:0.8}
+    .footer-logo-text{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.75rem;color:var(--slate-200);text-transform:uppercase;letter-spacing:0.1em}
+    .footer-copy{font-family:'JetBrains Mono',monospace;font-size:0.625rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--slate-600)}
+  </style>
+</head>
+<body>
+  <nav aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="Alfred Corp homepage">
+        <img src="/logo.png" alt="Alfred Corp logo" width="36" height="36" />
+        <span class="nav-logo-text">Alfred <em>Corp</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="/#services" class="nav-link">Services</a>
+        <a href="/#pricing" class="nav-link">Pricing</a>
+        <a href="/#about-us" class="nav-link">About Us</a>
+        <a href="/#faq" class="nav-link">FAQ</a>
+        <a href="/blog/" class="nav-link active">Blog</a>
+        <a href="/?contact=true" class="nav-link">Contact us</a>
+      </div>
+      <button id="mobile-menu-toggle" aria-label="Toggle mobile menu">
+        <svg class="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+        <svg class="close-icon" style="display:none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="mobile-menu">
+    <a href="/#services" class="nav-link">Services</a>
+    <a href="/#pricing" class="nav-link">Pricing</a>
+    <a href="/#about-us" class="nav-link">About Us</a>
+    <a href="/#faq" class="nav-link">FAQ</a>
+    <a href="/blog/" class="nav-link active">Blog</a>
+    <a href="/?contact=true" class="nav-link">Contact us</a>
+  </div>
+
+  <main>
+    <div class="eyebrow">Case Studies &amp; Insights</div>
+    <h1>AI in Action: Real Results<br/>for Real Businesses</h1>
+    <p class="subtitle">How Alfred Corp's agentic platform helps founders, consultants, and professional firms cut costs and scale — supervised by real professionals.</p>
+
+    <div class="posts-grid">
+      <a href="/blog/accounting-firm-ai-automation-case-study/" class="post-card">
+        <span class="post-tag">Accounting · SEO · Automation</span>
+        <h2 class="post-title">Accounting Firm AI Case Study: 35% Efficiency &amp; Lead Boost</h2>
+        <p class="post-excerpt">A multi-partner Canadian accounting firm unlocked hidden AI capabilities already inside their existing software — cutting data entry by 80% and tripling organic web traffic within 90 days.</p>
+        <div class="post-meta">
+          <span>June 15, 2026 · 6 min read</span>
+          <span class="post-stat">35% efficiency gain</span>
+        </div>
+        <span class="read-more">Read case study →</span>
+      </a>
+
+      <a href="/blog/ohs-automation-document-review-audit-assistant/" class="post-card">
+        <span class="post-tag">Health &amp; Safety · Compliance</span>
+        <h2 class="post-title">OHS Compliance Automation: How a Safety Consultant Cut Review Costs by 76%</h2>
+        <p class="post-excerpt">A solo OHS consultant eliminated seasonal staffing cycles and processed 200 client files in 4 hours — replacing 3 weeks of manual work — with zero fixed overhead in off-peak months.</p>
+        <div class="post-meta">
+          <span>June 15, 2026 · 7 min read</span>
+          <span class="post-stat">76% cost reduction</span>
+        </div>
+        <span class="read-more">Read case study →</span>
+      </a>
+
+      <a href="/blog/startup-government-contracts-ai-lead-generation/" class="post-card">
+        <span class="post-tag">B2G · Software · Procurement</span>
+        <h2 class="post-title">B2G Scale: How a Tech Startup Won $340K in Government Contracts with AI</h2>
+        <p class="post-excerpt">A 5-person software startup built an AI-driven RFP lead engine, secured SAM registrations, and won two government contracts — reducing engineer time per bid from 40 hours to 5 hours.</p>
+        <div class="post-meta">
+          <span>June 15, 2026 · 8 min read</span>
+          <span class="post-stat">28× ROI in 120 days</span>
+        </div>
+        <span class="read-more">Read case study →</span>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="/logo.png" alt="Alfred Corp logo" width="24" height="24" />
+        <span class="footer-logo-text">Alfred Corp.</span>
+      </div>
+      <span class="footer-copy">© 2026 Alfred Corp.</span>
+    </div>
+  </footer>
+
+  <script>
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+      const hamburger = toggleBtn.querySelector('.hamburger-icon');
+      const closeIcon = toggleBtn.querySelector('.close-icon');
+      
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('open');
+        if (isOpen) {
+          hamburger.style.display = 'none';
+          closeIcon.style.display = 'block';
+        } else {
+          hamburger.style.display = 'block';
+          closeIcon.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

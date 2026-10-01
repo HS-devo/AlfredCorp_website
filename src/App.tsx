@@ -142,7 +142,7 @@ function App() {
             transition={{ delay: 0.1 }}
             className="text-5xl sm:text-6xl md:text-7xl font-heading font-bold text-slate-100 mb-12 leading-tight tracking-tight"
           >
-            Enterprise AI Agents <br /> <span className="text-amber"> supervised by professionals</span>
+            AI automation for small businesses <br /> <span className="text-amber">with professionals in the loop</span>
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -155,7 +155,7 @@ function App() {
               <div>
                 <h3 className="text-lg font-heading font-bold text-slate-100 mb-2">I am a Small business, Founder or Entrepreneur</h3>
                 <p className="text-slate-400 text-sm mb-5">
-                  I want to use AI agents to reduce cost, gain efficiency and access professionals to improve business outcomes.
+                  Automate repetitive work, reduce operating costs, and get more time back without hiring an AI team.
                 </p>
               </div>
               <button 
@@ -196,18 +196,18 @@ function App() {
               <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <Zap className="h-6 w-6 text-amber" />
               </div>
-              <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">AI-Powered Speed</h3>
+              <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Automate Routine Work</h3>
               <p className="text-slate-300 leading-relaxed text-sm">
-                Task agents with one-time or routine business tasks. 
+                Put repeatable admin, marketing, and operations tasks on autopilot. 
               </p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 bg-obsidian border border-steel rounded flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <ShieldCheck className="h-6 w-6 text-amber" />
               </div>
-              <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Human-In-The-Loop</h3>
+              <h3 className="text-xl font-heading font-bold mb-3 text-slate-100 uppercase tracking-wide text-sm">Human-Reviewed Results</h3>
               <p className="text-slate-300 leading-relaxed text-sm">
-                Professionals review, correct, and verify tasks.
+                A qualified professional reviews important work before it reaches your customers or team.
               </p>
             </div>
             <div className="flex flex-col items-center">
@@ -224,6 +224,17 @@ function App() {
       </section>
 
       {/* Services Grid */}
+      <section aria-labelledby="why-alfred" className="py-16 bg-obsidian border-b border-steel">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm font-mono text-amber tracking-widest uppercase mb-4">Built for practical growth</p>
+          <h2 id="why-alfred" className="text-2xl sm:text-3xl font-heading font-bold text-slate-100 mb-4">A practical AI partner for the work that slows you down</h2>
+          <p className="max-w-3xl mx-auto text-slate-400 leading-relaxed">Alfred Corp helps Canadian founders and small businesses automate the busywork behind sales, operations, finance, and customer service—without giving up accountability or human judgment.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 text-xs font-mono uppercase tracking-widest text-slate-500">
+            <span>Transparent workflows</span><span>Professional oversight</span><span>Built for SMBs</span><span>Canadian operators</span>
+          </div>
+        </div>
+      </section>
+
       <ServicesSection onContactClick={openContactModal} />
 
       {/* Pricing Section */}

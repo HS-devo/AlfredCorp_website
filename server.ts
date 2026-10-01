@@ -465,9 +465,9 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
 
       await transporter.sendMail({
         from: `"Alfred Corp" <${smtpUser}>`,
-        to: email,
-        replyTo: smtpUser,
-        subject: "We received your message — Alfred Corp",
+        to: ["info@alfredcorp.com", email],
+        replyTo: email,
+        subject: "New contact request — Alfred Corp",
         text: [
           `Hi ${name},`,
           "",
@@ -520,9 +520,9 @@ Return an un-wrapped raw JSON object (no markdown) with this strict format:
       });
       await transporter.sendMail({
         from: `"Alfred Corp" <${smtpUser}>`,
-        to: email,
-        replyTo: smtpUser,
-        subject: "Your access request was received — Alfred Corp",
+        to: ["info@alfredcorp.com", email],
+        replyTo: email,
+        subject: "New access request — Alfred Corp",
         text: [
           `Hi ${name},`,
           "",
